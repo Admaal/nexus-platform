@@ -1,0 +1,16 @@
+node_modules/
+dist/
+**/.env
+!**/.env.example
+.env.local
+**/.env.local
+.DS_Store
+*.log
+apps/*/supabase.bak/
+apps/*/.git/
+.supabase/
+supabase/.temp/
+.tmp*
+*.pem
+*.key
+.dev.vars
