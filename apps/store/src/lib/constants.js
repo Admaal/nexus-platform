@@ -1,17 +1,40 @@
-export const PRODUCT_IMAGES = {
-  teclado: "https://images.unsplash.com/photo-1595225476474-87563907a212?w=800&q=85",
-  monitor: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&q=85",
-  auriculares: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=85",
-  ratón: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=85",
-  laptop: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=85",
-  silla: "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=800&q=85",
-  webcam: "https://images.unsplash.com/photo-1587826080692-f439cd0b70da?w=800&q=85",
-  cable: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&q=85",
-  hub: "https://images.unsplash.com/photo-1625842268584-8f3296236761?w=800&q=85",
-  soporte: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=85",
-  escritorio: "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&q=85",
-  default: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=85",
+const productAsset = (key) => ({
+  src: `/images/products/${key}-640.webp`,
+  srcSet: `/images/products/${key}-360.webp 360w, /images/products/${key}-640.webp 640w`,
+});
+
+export const PRODUCT_IMAGE_ASSETS = {
+  teclado: productAsset("teclado"),
+  monitor: productAsset("monitor"),
+  auriculares: productAsset("auriculares"),
+  raton: productAsset("raton"),
+  laptop: productAsset("laptop"),
+  silla: productAsset("silla"),
+  webcam: productAsset("webcam"),
+  cable: productAsset("cable"),
+  hub: productAsset("hub"),
+  escritorio: productAsset("escritorio"),
+  default: productAsset("default"),
 };
+
+export const PRODUCT_IMAGES = Object.fromEntries(
+  Object.entries(PRODUCT_IMAGE_ASSETS).map(([key, asset]) => [key, asset.src]),
+);
+
+const PRODUCT_MATCHERS = [
+  ["teclado", "teclado"],
+  ["monitor", "monitor"],
+  ["auriculares", "auriculares"],
+  ["ratón", "raton"],
+  ["raton", "raton"],
+  ["laptop", "laptop"],
+  ["silla", "silla"],
+  ["webcam", "webcam"],
+  ["cable", "cable"],
+  ["hub", "hub"],
+  ["soporte", "raton"],
+  ["escritorio", "escritorio"],
+];
 
 export const ORDER_STATUS = {
   PENDING: "PENDING",
@@ -20,10 +43,18 @@ export const ORDER_STATUS = {
   FAILED: "FAILED",
 };
 
-export const getProductImage = (name = "") => {
+export const getProductImageAsset = (name = "") => {
   const lower = name.toLowerCase();
-  for (const [key, url] of Object.entries(PRODUCT_IMAGES)) {
-    if (key !== "default" && lower.includes(key)) return url;
+  for (const [matcher, assetKey] of PRODUCT_MATCHERS) {
+    if (lower.includes(matcher)) return PRODUCT_IMAGE_ASSETS[assetKey];
   }
-  return PRODUCT_IMAGES.default;
+  return PRODUCT_IMAGE_ASSETS.default;
 };
+
+export const getProductImage = (name = "") => getProductImageAsset(name).src;
+
+export const getProductImageSources = (name = "") => ({
+  ...getProductImageAsset(name),
+  fallbackSrc: "/images/products/product-fallback.jpg",
+  sizes: "(max-width: 480px) calc(100vw - 32px), (max-width: 860px) 50vw, 33vw",
+});

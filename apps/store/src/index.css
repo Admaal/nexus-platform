@@ -1,4 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+}
 
 /* ── Design Tokens ── */
 :root {
@@ -51,8 +57,15 @@ body {
 }
 
 a { color: inherit; text-decoration: none; }
+picture.responsive-image { display: contents; }
 img { display: block; max-width: 100%; }
 button { font-family: inherit; cursor: pointer; }
+.icon--inline {
+  width: 1em;
+  height: 1em;
+  flex: 0 0 auto;
+  vertical-align: -0.15em;
+}
 
 /* ── Layout ── */
 .page {
@@ -536,10 +549,16 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 .review-card__stars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   color: #FBBF24;
-  font-size: 0.85rem;
-  letter-spacing: 2px;
   margin-bottom: 16px;
+}
+.review-card__star {
+  width: 0.85rem;
+  height: 0.85rem;
+  flex: 0 0 auto;
 }
 
 .review-card__text {
@@ -676,7 +695,12 @@ button { font-family: inherit; cursor: pointer; }
   color: var(--text-secondary);
   font-size: 0.85rem;
 }
-.drawer__empty-icon { font-size: 2rem; opacity: 0.4; }
+.drawer__empty-icon {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  opacity: 0.4;
+}
 
 /* ── Cart Items ── */
 .cart-items { display: flex; flex-direction: column; gap: 16px; }
@@ -794,6 +818,9 @@ button { font-family: inherit; cursor: pointer; }
 .order-card__qty { font-size: 0.7rem; color: var(--text-secondary); margin: 0; }
 .order-card__action { margin-top: 10px; }
 .order-card__invoice-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 0.78rem;
   color: var(--text);
   font-weight: 500;
@@ -815,6 +842,9 @@ button { font-family: inherit; cursor: pointer; }
   margin-top: 12px;
 }
 .order-card__track-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-weight: 600;
   color: #3b82f6;
   text-decoration: none;
@@ -934,7 +964,12 @@ button { font-family: inherit; cursor: pointer; }
   text-align: center;
   color: var(--text-secondary);
 }
-.checkout-empty__icon { font-size: 2.5rem; opacity: 0.3; }
+.checkout-empty__icon {
+  display: block;
+  width: 2.5rem;
+  height: 2.5rem;
+  opacity: 0.3;
+}
 .checkout-empty h2 { margin: 0; font-size: 1.3rem; color: var(--text); }
 
 /* ── Footer ── */

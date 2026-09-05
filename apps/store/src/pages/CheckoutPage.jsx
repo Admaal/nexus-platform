@@ -5,7 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Navbar } from "../components/layout/Navbar";
 import { Button } from "../components/ui/Button";
-import { getProductImage } from "../lib/constants";
+import { ResponsiveImage } from "../components/ui/ResponsiveImage";
+import { ArrowRightIcon, CartIcon, InfoIcon } from "../components/ui/Icon";
+import { getProductImageSources } from "../lib/constants";
 import { CartDrawer } from "../components/cart/CartDrawer";
 import { OrdersDrawer } from "../components/orders/OrdersDrawer";
 
@@ -52,7 +54,7 @@ export function CheckoutPage({ cart, orders }) {
       <div className="page">
         <Navbar itemCount={0} onCartOpen={() => setCartOpen(true)} onOrdersOpen={() => setOrdersOpen(true)} />
         <div className="container checkout-empty">
-          <p className="checkout-empty__icon">🛒</p>
+          <CartIcon className="checkout-empty__icon" />
           <h2>Tu carrito está vacío</h2>
           <Button variant="primary" onClick={() => navigate("/")}>Volver a la tienda</Button>
         </div>
@@ -124,7 +126,7 @@ export function CheckoutPage({ cart, orders }) {
 
             <div className="checkout__privacy-wrap">
               <p className="checkout__privacy-notice">
-                ℹ️ <strong>Privacidad:</strong> Al usar este portfolio, aceptas que los datos introducidos (nombre, email, dirección) 
+                <InfoIcon className="icon--inline" /> <strong>Privacidad:</strong> Al usar este portfolio, aceptas que los datos introducidos (nombre, email, dirección)
                 se guarden temporalmente en una base de datos pública de prueba. <strong>Usa datos ficticios.</strong>
               </p>
             </div>
@@ -135,7 +137,11 @@ export function CheckoutPage({ cart, orders }) {
               disabled={isSubmitting}
               className="btn--full checkout-submit"
             >
-              {isSubmitting ? "Procesando..." : "Confirmar Pedido →"}
+              {isSubmitting ? (
+                "Procesando..."
+              ) : (
+                <>Confirmar Pedido <ArrowRightIcon className="icon--inline" /></>
+              )}
             </Button>
           </form>
         </section>
@@ -143,16 +149,28 @@ export function CheckoutPage({ cart, orders }) {
         <aside className="checkout-summary">
           <h2 className="checkout-summary__title">Resumen del pedido</h2>
           <div className="checkout-items">
-            {cart.items.map((item) => (
-              <div key={item.id} className="checkout-item">
-                <img src={getProductImage(item.name)} alt={item.name} className="checkout-item__img" />
-                <div className="checkout-item__info">
-                  <p className="checkout-item__name">{item.name}</p>
-                  <p className="checkout-item__meta">× {item.quantity}</p>
+            {cart.items.map((item) => {
+              const image = getProductImageSources(item.name);
+
+              return (
+                <div key={item.id} className="checkout-item">
+                  <ResponsiveImage
+                    {...image}
+                    alt={item.name}
+                    className="checkout-item__img"
+                    sizes="48px"
+                    decoding="async"
+                    width={48}
+                    height={60}
+                  />
+                  <div className="checkout-item__info">
+                    <p className="checkout-item__name">{item.name}</p>
+                    <p className="checkout-item__meta">× {item.quantity}</p>
+                  </div>
+                  <span className="checkout-item__price">{(item.price * item.quantity).toFixed(2)}€</span>
                 </div>
-                <span className="checkout-item__price">{(item.price * item.quantity).toFixed(2)}€</span>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div className="checkout-summary__total">
             <span>Total</span>

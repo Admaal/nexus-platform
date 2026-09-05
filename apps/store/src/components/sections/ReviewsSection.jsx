@@ -1,3 +1,5 @@
+import { StarIcon } from "../ui/Icon";
+
 const REVIEWS = [
   {
     text: "La calidad del teclado mecánico es increíble. Llevo tres meses usándolo a diario y la experiencia de escritura es superior a cualquier otro que haya probado.",
@@ -22,7 +24,9 @@ const REVIEWS = [
 function Stars({ count }) {
   return (
     <div className="review-card__stars" aria-label={`${count} de 5 estrellas`}>
-      {"★".repeat(count)}
+      {Array.from({ length: count }, (_, index) => (
+        <StarIcon key={index} className="review-card__star" />
+      ))}
     </div>
   );
 }

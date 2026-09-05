@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { CartItem } from "./CartItem";
 import { Button } from "../ui/Button";
+import { ArrowRightIcon, CartIcon } from "../ui/Icon";
 
 export function CartDrawer({ isOpen, onClose, items, total, onRemove, onUpdateQuantity }) {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export function CartDrawer({ isOpen, onClose, items, total, onRemove, onUpdateQu
         <div className="drawer__body">
           {items.length === 0 ? (
             <div className="drawer__empty">
-              <p className="drawer__empty-icon">🛒</p>
+              <CartIcon className="drawer__empty-icon" />
               <p>Tu carrito está vacío</p>
               <Button variant="ghost" onClick={onClose}>Seguir comprando</Button>
             </div>
@@ -47,7 +48,7 @@ export function CartDrawer({ isOpen, onClose, items, total, onRemove, onUpdateQu
               <span className="cart-total__amount">{total.toFixed(2)}€</span>
             </div>
             <Button variant="primary" onClick={handleCheckout} className="btn--full">
-              Proceder al pago →
+              Proceder al pago <ArrowRightIcon className="icon--inline" />
             </Button>
           </div>
         )}

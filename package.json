@@ -13,7 +13,8 @@
     "dev:fleet": "npm run dev -w apps/fleet",
     "build:store": "npm run build -w apps/store",
     "build:fleet": "npm run build -w apps/fleet",
-    "lint": "npm run lint -w apps/store && npm run lint -w apps/fleet"
+    "lint": "npm run lint -w apps/store && npm run lint -w apps/fleet",
+    "assets:store": "node scripts/generate-store-image-assets.mjs && node scripts/download-store-font.mjs"
   },
   "author": "Admaal",
   "license": "MIT"

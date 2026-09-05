@@ -1,10 +1,25 @@
+import { ResponsiveImage } from "../ui/ResponsiveImage";
+
+const HERO_IMAGE = {
+  src: "/images/hero/hero-1024.webp",
+  srcSet:
+    "/images/hero/hero-640.webp 640w, /images/hero/hero-1024.webp 1024w, /images/hero/hero-1600.webp 1600w",
+  sizes: "100vw",
+  fallbackSrc: "/images/hero/hero-fallback.jpg",
+};
+
 export function HeroSection({ onShopClick }) {
   return (
     <section className="hero">
-      <img
-        src="https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?w=1600&q=85"
+      <ResponsiveImage
+        {...HERO_IMAGE}
         alt="Premium workspace setup"
         className="hero__image"
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
+        width={1600}
+        height={900}
       />
       <div className="hero__overlay">
         <div className="hero__content">

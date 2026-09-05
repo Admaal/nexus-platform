@@ -1,14 +1,20 @@
-import { getProductImage } from "../../lib/constants";
+import { ResponsiveImage } from "../ui/ResponsiveImage";
+import { getProductImageSources } from "../../lib/constants";
 
 export function ProductCard({ product, onAddToCart }) {
+  const image = getProductImageSources(product.name);
+
   return (
     <article className="product-card">
       <div className="product-card__image-wrap">
-        <img
-          src={getProductImage(product.name)}
+        <ResponsiveImage
+          {...image}
           alt={product.name}
           className="product-card__image"
           loading="lazy"
+          decoding="async"
+          width={360}
+          height={480}
         />
       </div>
       <div className="product-card__body">

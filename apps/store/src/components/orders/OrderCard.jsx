@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Badge } from "../ui/Badge";
+import { FileIcon, TruckIcon } from "../ui/Icon";
 
 export function OrderCard({ order, onRetryProcess }) {
   const isCompleted = order.status === "COMPLETED";
@@ -42,7 +43,7 @@ export function OrderCard({ order, onRetryProcess }) {
               rel="noreferrer"
               className="order-card__invoice-link"
             >
-              📄 Descargar Factura PDF
+              <FileIcon className="icon--inline" /> Descargar Factura PDF
             </a>
           ) : (
             !isCompleted && (
@@ -64,7 +65,7 @@ export function OrderCard({ order, onRetryProcess }) {
           rel="noreferrer"
           className="order-card__track-link"
         >
-          🚚 Rastrear Envío
+          <TruckIcon className="icon--inline" /> Rastrear Envío
         </a>
       </div>
     </div>

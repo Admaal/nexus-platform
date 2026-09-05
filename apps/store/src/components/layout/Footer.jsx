@@ -1,3 +1,5 @@
+import { WarningIcon } from "../ui/Icon";
+
 export function Footer() {
   return (
     <footer className="footer">
@@ -39,7 +41,7 @@ export function Footer() {
             © {new Date().getFullYear()} Nexus Commerce. Todos los derechos reservados.
           </p>
           <p className="footer__disclaimer">
-            ⚠️ <strong>Aviso Legal:</strong> Este es un proyecto de portfolio ficticio creado con fines demostrativos. 
+            <WarningIcon className="icon--inline" /> <strong>Aviso Legal:</strong> Este es un proyecto de portfolio ficticio creado con fines demostrativos.
             Por favor, <strong>no introduzcas datos personales reales, correos electrónicos verdaderos ni contraseñas.</strong> 
             Los datos introducidos quedan registrados en una base de datos de prueba temporal.
           </p>

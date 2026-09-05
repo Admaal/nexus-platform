@@ -1,12 +1,19 @@
-import { getProductImage } from "../../lib/constants";
+import { ResponsiveImage } from "../ui/ResponsiveImage";
+import { getProductImageSources } from "../../lib/constants";
 
 export function CartItem({ item, onRemove, onUpdateQuantity }) {
+  const image = getProductImageSources(item.name);
+
   return (
     <div className="cart-item">
-      <img
-        src={getProductImage(item.name)}
+      <ResponsiveImage
+        {...image}
         alt={item.name}
         className="cart-item__image"
+        sizes="64px"
+        decoding="async"
+        width={64}
+        height={80}
       />
       <div className="cart-item__info">
         <p className="cart-item__name">{item.name}</p>

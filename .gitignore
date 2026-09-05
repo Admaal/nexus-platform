@@ -1,5 +1,11 @@
 node_modules/
 dist/
+
+# Docs internas (SDD, performance) — no publicar en portfolio
+docs/specs/
+docs/performance/
+.cursor/
+coverage/
 **/.env
 !**/.env.example
 .env.local

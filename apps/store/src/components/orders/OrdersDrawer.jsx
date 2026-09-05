@@ -1,4 +1,5 @@
 import { OrderCard } from "./OrderCard";
+import { PackageIcon } from "../ui/Icon";
 
 export function OrdersDrawer({ isOpen, onClose, orders, onRetryProcess, checkoutWarning }) {
   return (
@@ -18,7 +19,7 @@ export function OrdersDrawer({ isOpen, onClose, orders, onRetryProcess, checkout
           )}
           {orders.length === 0 ? (
             <div className="drawer__empty">
-              <p className="drawer__empty-icon">📦</p>
+              <PackageIcon className="drawer__empty-icon" />
               <p>No tienes pedidos todavía</p>
             </div>
           ) : (
