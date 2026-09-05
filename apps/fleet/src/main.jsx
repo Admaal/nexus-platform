@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { validateEnv } from "./lib/env";
 import App from "./App.jsx";
+import { SettingsIcon } from "./components/ui/Icon";
 
 // H6: Validar env UNA sola vez antes de montar React.
 // Si falla, el Error Boundary captura el error y muestra pantalla útil.
@@ -51,7 +52,7 @@ class ErrorBoundary extends Component {
                 marginBottom: "20px",
               }}
             >
-              <span style={{ fontSize: "1.75rem" }}>⚙️</span>
+              <SettingsIcon className="error-icon" />
               <div>
                 <h1
                   style={{

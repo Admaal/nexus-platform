@@ -17,6 +17,26 @@
   box-sizing: inherit;
 }
 
+.fleet-icon {
+  display: inline-block;
+  width: 1.1em;
+  height: 1.1em;
+  flex: 0 0 auto;
+  vertical-align: middle;
+}
+
+.icon--inline {
+  width: 1em;
+  height: 1em;
+}
+
+.error-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  color: #f87171;
+  flex: 0 0 auto;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -121,6 +141,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.sidebar-logo__icon {
+  width: 24px;
+  height: 24px;
+  color: #ffffff;
 }
 
 .sidebar-title {
@@ -386,6 +412,9 @@ body {
 }
 
 .event-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 0.7rem;
   font-weight: 800;
 }
@@ -416,6 +445,9 @@ body {
   font-weight: 700;
   font-size: 0.9rem;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
 }
 

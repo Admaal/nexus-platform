@@ -39,7 +39,12 @@ Dos proyectos Vercel apuntando al **mismo repositorio** de GitHub.
 | `VITE_SUPABASE_ANON_KEY` | Anon key del proyecto Supabase |
 | `VITE_TELEMETRY_INGEST_URL` | `https://yiarfffsaciuodbplxus.supabase.co/functions/v1/telemetry-ingest` |
 | `VITE_TELEMETRY_INGEST_SECRET` | Mismo valor que `TELEMETRY_INGEST_SECRET` en Supabase |
+| `VITE_CARTO_API_KEY` | Clave pública de CARTO restringida por dominio |
 | `VITE_TRUCK_ID` | `00000000-0000-4000-8000-000000000001` |
+
+Solicita la clave en [CARTO Basemaps](https://carto.com/basemaps/apikey/) y restringe
+la al dominio de producción de Fleet y a `localhost:5174`. La clave se expone en el
+navegador por diseño; no la confundas con el secreto de ingesta de telemetría.
 
 ## Después del deploy
 

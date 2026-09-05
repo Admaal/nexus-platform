@@ -1,3 +1,5 @@
+import { PlayIcon, RefreshIcon, StopIcon } from "./ui/Icon";
+
 /** Indicador de estado y botones de acción de la flota. */
 export function ControlPanel({ isSimulating, onToggle, onReset }) {
   return (
@@ -17,7 +19,11 @@ export function ControlPanel({ isSimulating, onToggle, onReset }) {
           onClick={onToggle}
           className={`btn-primary ${isSimulating ? "btn-stop" : "btn-start"}`}
         >
-          {isSimulating ? "⏹️ Parar Telemetría" : "▶️ Iniciar Viaje"}
+          {isSimulating ? (
+            <><StopIcon className="icon--inline" /> Parar Telemetría</>
+          ) : (
+            <><PlayIcon className="icon--inline" /> Iniciar Viaje</>
+          )}
         </button>
 
         <button
@@ -25,7 +31,7 @@ export function ControlPanel({ isSimulating, onToggle, onReset }) {
           disabled={isSimulating}
           className={`btn-secondary ${isSimulating ? "disabled" : "enabled"}`}
         >
-          🔄 Resetear Posición
+          <RefreshIcon className="icon--inline" /> Resetear Posición
         </button>
       </div>
     </div>

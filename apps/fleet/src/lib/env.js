@@ -3,6 +3,7 @@ export const env = {
   SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY,
   TELEMETRY_INGEST_URL: import.meta.env.VITE_TELEMETRY_INGEST_URL,
   TELEMETRY_INGEST_SECRET: import.meta.env.VITE_TELEMETRY_INGEST_SECRET,
+  CARTO_API_KEY: import.meta.env.VITE_CARTO_API_KEY,
   TRUCK_ID: import.meta.env.VITE_TRUCK_ID,
 };
 
@@ -24,7 +25,7 @@ export function validateEnv() {
 
   throw new Error(
     `Faltan ${missing.length} variable(s) de entorno requerida(s):\n\n` +
-      missing.map((v) => `  • ${v}`).join("\n") +
+      missing.map((v) => `  - ${v}`).join("\n") +
       '\n\nCopia ".env.example" a ".env" y rellena los valores.',
   );
 }

@@ -1,11 +1,31 @@
+import { AlertIcon, CheckIcon, InfoIcon } from "./ui/Icon";
+
 function getLogStyle(type) {
   switch (type) {
     case "warning":
-      return { bg: "rgba(239, 68, 68, 0.1)", border: "#ef4444", color: "#ef4444", label: "⚠️ ALERTA" };
+      return {
+        bg: "rgba(239, 68, 68, 0.1)",
+        border: "#ef4444",
+        color: "#ef4444",
+        label: "ALERTA",
+        Icon: AlertIcon,
+      };
     case "success":
-      return { bg: "rgba(16, 185, 129, 0.1)", border: "#10b981", color: "#10b981", label: "✅ SISTEMA" };
+      return {
+        bg: "rgba(16, 185, 129, 0.1)",
+        border: "#10b981",
+        color: "#10b981",
+        label: "SISTEMA",
+        Icon: CheckIcon,
+      };
     default:
-      return { bg: "rgba(59, 130, 246, 0.1)", border: "#3b82f6", color: "#3b82f6", label: "ℹ️ INFO" };
+      return {
+        bg: "rgba(59, 130, 246, 0.1)",
+        border: "#3b82f6",
+        color: "#3b82f6",
+        label: "INFO",
+        Icon: InfoIcon,
+      };
   }
 }
 
@@ -23,6 +43,7 @@ export function EventConsole({ alertsLog }) {
         ) : (
           alertsLog.map((log) => {
             const s = getLogStyle(log.type);
+            const LogIcon = s.Icon;
             return (
               <div
                 key={log.id}
@@ -34,6 +55,7 @@ export function EventConsole({ alertsLog }) {
               >
                 <div className="event-item-header">
                   <span className="event-label" style={{ color: s.color }}>
+                    <LogIcon className="icon--inline" />
                     {s.label}
                   </span>
                   <span className="event-time">{log.time}</span>

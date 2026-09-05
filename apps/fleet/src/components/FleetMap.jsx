@@ -1,14 +1,28 @@
+import { useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { blueIcon, redIcon } from "../constants/mapIcons";
+import { env } from "../lib/env";
+import { getMapTileConfig } from "../lib/mapTiles";
 import { MapResizer } from "./MapResizer";
+import { AlertIcon, CheckIcon } from "./ui/Icon";
 
 /** Mapa Leaflet con marcador de posición y banner de alerta. */
 export function FleetMap({ truckPosition, isDeviated }) {
+  const [tileConfig, setTileConfig] = useState(() => getMapTileConfig(env.CARTO_API_KEY));
+
+  const handleTileError = () => {
+    if (tileConfig.provider === "carto") {
+      setTileConfig(getMapTileConfig());
+    }
+  };
+
   return (
     <div className="map-wrapper">
       {isDeviated && (
-        <div className="deviation-banner">⚠️ VEHÍCULO FUERA DE RUTA</div>
+        <div className="deviation-banner">
+          <AlertIcon className="icon--inline" /> VEHÍCULO FUERA DE RUTA
+        </div>
       )}
       <MapContainer
         center={[38.5, -4.0]}
@@ -19,14 +33,21 @@ export function FleetMap({ truckPosition, isDeviated }) {
         <MapResizer />
         <ZoomControl position="bottomright" />
         <TileLayer
-          attribution="&copy; OpenStreetMap"
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          key={tileConfig.provider}
+          attribution={tileConfig.attribution}
+          url={tileConfig.url}
+          maxZoom={tileConfig.maxZoom}
+          eventHandlers={{ tileerror: handleTileError }}
         />
         <Marker position={truckPosition} icon={isDeviated ? redIcon : blueIcon}>
           <Popup>
             <strong>Vehículo NEXUS-1</strong>
             <br />
-            {isDeviated ? "⚠️ Desviado" : "✅ Trayecto Nominal"}
+            {isDeviated ? (
+              <><AlertIcon className="icon--inline" /> Desviado</>
+            ) : (
+              <><CheckIcon className="icon--inline" /> Trayecto Nominal</>
+            )}
           </Popup>
         </Marker>
       </MapContainer>
