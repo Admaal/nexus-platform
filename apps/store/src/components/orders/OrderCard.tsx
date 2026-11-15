@@ -7,9 +7,10 @@ import type { Order } from "../../types";
 interface OrderCardProps {
   order: Order;
   onRetryProcess?: ((orderId: string) => unknown) | undefined;
+  onOpenInvoice?: ((order: Order) => unknown) | undefined;
 }
 
-export function OrderCard({ order, onRetryProcess }: OrderCardProps) {
+export function OrderCard({ order, onRetryProcess, onOpenInvoice }: OrderCardProps) {
   const isCompleted = order.status === "COMPLETED";
   const ref = orderRef(order.id);
   const [retrying, setRetrying] = useState(false);
@@ -44,15 +45,15 @@ export function OrderCard({ order, onRetryProcess }: OrderCardProps) {
 
       <div className="order-card__actions-wrapper">
         <div className="order-card__action">
-          {isCompleted && order.invoice_url ? (
-            <a
-              href={order.invoice_url}
-              target="_blank"
-              rel="noreferrer"
+          {isCompleted && order.invoice_path ? (
+            <button
+              type="button"
               className="order-card__invoice-link"
+              onClick={() => void onOpenInvoice?.(order)}
+              style={{ background: "none", border: "none", padding: 0, cursor: "pointer", font: "inherit" }}
             >
               <FileIcon className="icon--inline" /> Descargar Factura PDF
-            </a>
+            </button>
           ) : (
             !isCompleted && (
               <button

@@ -19,7 +19,6 @@ Dos proyectos Vercel apuntando al **mismo repositorio** de GitHub.
 | `VITE_SUPABASE_URL` | `https://yiarfffsaciuodbplxus.supabase.co` |
 | `VITE_SUPABASE_ANON_KEY` | Anon key del proyecto Supabase |
 | `VITE_FLEET_URL` | URL de producción de fleet (ej. `https://nexus-fleet.vercel.app`) |
-| `VITE_PROCESS_ORDER_SECRET` | Mismo valor que `PROCESS_ORDER_SECRET` en Supabase |
 
 ## Proyecto 2: Fleet (telemetría)
 

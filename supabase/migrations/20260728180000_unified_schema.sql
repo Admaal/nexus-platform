@@ -14,9 +14,19 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION public.st_estimatedextent(text, text) FROM PUBLIC, anon, authenticated;
-REVOKE EXECUTE ON FUNCTION public.st_estimatedextent(text, text, text) FROM PUBLIC, anon, authenticated;
-REVOKE EXECUTE ON FUNCTION public.st_estimatedextent(text, text, text, boolean) FROM PUBLIC, anon, authenticated;
+
+-- PostGIS puede vivir en public (proyecto remoto) o en extensions (entorno local nuevo).
+DO $$
+DECLARE
+  fn regprocedure;
+BEGIN
+  FOR fn IN
+    SELECT p.oid::regprocedure FROM pg_proc p WHERE p.proname = 'st_estimatedextent'
+  LOOP
+    EXECUTE format('REVOKE EXECUTE ON FUNCTION %s FROM PUBLIC, anon, authenticated', fn);
+  END LOOP;
+END
+$$;
 
 -- ========== COMMERCE ==========
 CREATE TABLE public.products (

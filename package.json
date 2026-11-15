@@ -19,7 +19,8 @@
     "typecheck": "npm run typecheck --workspaces --if-present && npm run typecheck:functions",
     "test": "npm run test --workspaces --if-present",
     "mutation": "npm run mutation -w @nexus/domain",
-    "typecheck:functions": "tsc -p supabase/functions/process-order && tsc -p supabase/functions/telemetry-ingest"
+    "typecheck:functions": "tsc -p supabase/functions/process-order && tsc -p supabase/functions/telemetry-ingest",
+    "test:db": "supabase test db"
   },
   "author": "Admaal",
   "license": "MIT",

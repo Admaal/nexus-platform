@@ -29,7 +29,8 @@ const emptyOrders: Orders = {
   loading: false,
   fetchOrders: () => Promise.resolve(),
   createOrder: () => Promise.resolve({ error: null }),
-  retryProcessOrder: () => Promise.resolve({ data: null, error: null }),
+  retryProcessOrder: () => Promise.resolve({ data: { requested: true }, error: null }),
+  openInvoice: () => Promise.resolve(),
 };
 
 const completedOrder: Order = {
@@ -38,7 +39,7 @@ const completedOrder: Order = {
   customer_name: "Ada",
   shipping_address: "Calle Mayor 1",
   status: "COMPLETED",
-  invoice_url: "/invoice.pdf",
+  invoice_path: "user/order.pdf",
   created_at: "2026-01-01T00:00:00Z",
   total: 19.99,
   items: [],
@@ -67,6 +68,7 @@ describe("iconografía de la tienda / AC-01 a AC-09", () => {
         <OrderCard
           order={completedOrder}
           onRetryProcess={() => undefined}
+          onOpenInvoice={() => undefined}
         />
       </MemoryRouter>,
     );

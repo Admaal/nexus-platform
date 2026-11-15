@@ -6,15 +6,15 @@ Este archivo es la fuente de verdad de la fase y de la valla. El historial vive 
 
 ## Fase actual
 
-**Fase 0 — base y valla (cerrando).** TypeScript estricto en apps y Edge Functions, CI y dominio puro con mutation testing.
+**Fase 1 — seguridad y dominio en servidor.** `place_order` calcula el precio en servidor, RLS cerrada, bucket de facturas privado y sin secretos de `process-order` en el frontend. Tests: pgTAP (`npm run test:db`, requiere Docker).
 
-No construyas la fase siguiente (F1: seguridad y dominio en servidor) hasta cerrar esta. Si dudas del alcance, pregunta.
+No construyas la fase siguiente (F2: flujo por eventos con cola, DLQ e idempotencia) hasta cerrar esta. Si dudas del alcance, pregunta.
 
 ## Stack
 
 - Lenguaje: TypeScript estricto (`tsconfig.base.json`) en `apps/*`, `packages/domain` y Edge Functions (los tipos de Deno son shims hasta F2).
 - Frontend: React 19 + Vite (`apps/store`, `apps/fleet`). Backend: Supabase (Postgres, Edge Functions en Deno, Realtime).
-- Tests: Vitest (`npm test`). Mutation: Stryker.
+- Tests: Vitest (`npm test`), pgTAP para SQL/RLS (`npm run test:db`). Mutation: Stryker.
 - Dominio: `packages/domain/src/` (puro, sin framework ni E/S).
 - Lint de pureza: `no-restricted-imports` y `no-restricted-globals` en `packages/domain/eslint.config.js`.
 

@@ -7,10 +7,11 @@ interface OrdersDrawerProps {
   onClose: () => void;
   orders: Order[];
   onRetryProcess?: (orderId: string) => unknown;
+  onOpenInvoice?: (order: Order) => unknown;
   checkoutWarning?: string | undefined;
 }
 
-export function OrdersDrawer({ isOpen, onClose, orders, onRetryProcess, checkoutWarning }: OrdersDrawerProps) {
+export function OrdersDrawer({ isOpen, onClose, orders, onRetryProcess, onOpenInvoice, checkoutWarning }: OrdersDrawerProps) {
   return (
     <>
       {isOpen && <div className="overlay" onClick={onClose} />}
@@ -34,7 +35,7 @@ export function OrdersDrawer({ isOpen, onClose, orders, onRetryProcess, checkout
           ) : (
             <div className="orders-list">
               {orders.map((order) => (
-                <OrderCard key={order.id} order={order} onRetryProcess={onRetryProcess} />
+                <OrderCard key={order.id} order={order} onRetryProcess={onRetryProcess} onOpenInvoice={onOpenInvoice} />
               ))}
             </div>
           )}
