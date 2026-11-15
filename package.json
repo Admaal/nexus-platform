@@ -19,8 +19,9 @@
     "typecheck": "npm run typecheck --workspaces --if-present && npm run typecheck:functions",
     "test": "npm run test --workspaces --if-present",
     "mutation": "npm run mutation -w @nexus/domain",
-    "typecheck:functions": "tsc -p supabase/functions/order-worker && tsc -p supabase/functions/telemetry-ingest",
-    "test:db": "supabase test db"
+    "typecheck:functions": "tsc -p supabase/functions/order-worker && tsc -p supabase/functions/telemetry-ingest && tsc -p e2e",
+    "test:db": "supabase test db",
+    "test:e2e": "node scripts/run-e2e.mjs"
   },
   "author": "Admaal",
   "license": "MIT",
@@ -28,6 +29,7 @@
     "node": ">=22"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "@supabase/supabase-js": "^2.119.0",
     "pdf-lib": "^1.17.1"
   }

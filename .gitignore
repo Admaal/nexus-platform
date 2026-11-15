@@ -23,3 +23,5 @@ supabase/.temp/
 .dev.vars
 .stryker-tmp/
 reports/
+test-results/
+playwright-report/

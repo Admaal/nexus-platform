@@ -1,16 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
-
+import {
+  addToCart,
+  cartItemCount,
+  cartTotalCents,
+  removeFromCart,
+  updateQuantity as setLineQuantity,
+} from "@nexus/domain";
 import type { CartItem, Product } from "../types";
 
-const CART_KEY = "nexus_cart";
+export const CART_KEY = "nexus_cart";
 
 function loadCart(): CartItem[] {
   try {
     const rawData = localStorage.getItem(CART_KEY);
     if (!rawData) return [];
-    
-    const parsed = JSON.parse(rawData);
-    // Prevención estricta: si el JSON.parse no devuelve un Array (ej. inyección de string) caemos al vacío
+
+    const parsed: unknown = JSON.parse(rawData);
+    // Si el JSON no es un array (p. ej. contenido manipulado) caemos al carrito vacío.
     return Array.isArray(parsed) ? (parsed as CartItem[]) : [];
   } catch {
     return [];
@@ -20,39 +26,28 @@ function loadCart(): CartItem[] {
 export type Cart = ReturnType<typeof useCart>;
 
 export function useCart() {
-  const [items, setItems] = useState(loadCart);
+  const [items, setItems] = useState<CartItem[]>(loadCart);
 
   useEffect(() => {
     localStorage.setItem(CART_KEY, JSON.stringify(items));
   }, [items]);
 
   const addItem = useCallback((product: Product) => {
-    setItems((prev) => {
-      const existing = prev.find((i) => i.id === product.id);
-      if (existing) {
-        return prev.map((i) =>
-          i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
-        );
-      }
-      return [...prev, { ...product, quantity: 1 }];
-    });
+    setItems((prev) => addToCart(prev, product));
   }, []);
 
   const removeItem = useCallback((id: string) => {
-    setItems((prev) => prev.filter((i) => i.id !== id));
+    setItems((prev) => removeFromCart(prev, id));
   }, []);
 
   const updateQuantity = useCallback((id: string, quantity: number) => {
-    if (quantity < 1) return;
-    setItems((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, quantity } : i))
-    );
+    setItems((prev) => setLineQuantity(prev, id, quantity));
   }, []);
 
   const clearCart = useCallback(() => setItems([]), []);
 
-  const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
-  const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const itemCount = cartItemCount(items);
+  const total = cartTotalCents(items) / 100;
 
   return { items, itemCount, total, addItem, removeItem, updateQuantity, clearCart };
 }
