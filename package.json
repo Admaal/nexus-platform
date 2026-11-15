@@ -19,12 +19,16 @@
     "typecheck": "npm run typecheck --workspaces --if-present && npm run typecheck:functions",
     "test": "npm run test --workspaces --if-present",
     "mutation": "npm run mutation -w @nexus/domain",
-    "typecheck:functions": "tsc -p supabase/functions/process-order && tsc -p supabase/functions/telemetry-ingest",
+    "typecheck:functions": "tsc -p supabase/functions/order-worker && tsc -p supabase/functions/telemetry-ingest",
     "test:db": "supabase test db"
   },
   "author": "Admaal",
   "license": "MIT",
   "engines": {
     "node": ">=22"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.119.0",
+    "pdf-lib": "^1.17.1"
   }
 }

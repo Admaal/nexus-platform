@@ -25,7 +25,6 @@ Copia `.env.example` a `.env`:
 | `VITE_SUPABASE_URL` | URL del proyecto Supabase |
 | `VITE_SUPABASE_ANON_KEY` | Anon key |
 | `VITE_TELEMETRY_INGEST_URL` | URL de `telemetry-ingest` |
-| `VITE_TELEMETRY_INGEST_SECRET` | API key para la ingesta |
 | `VITE_TRUCK_ID` | UUID demo sin `?tracking_id=` |
 
 ## Desarrollo local

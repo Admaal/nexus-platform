@@ -7,7 +7,10 @@ Monorepo de portfolio: **tienda e-commerce** + **panel de telemetría en tiempo 
 ## Arquitectura
 
 ```
-apps/store  →  Supabase (orders/products)  →  Edge Function process-order  →  email + PDF
+apps/store  →  RPC place_order  →  orders + evento order.created (pgmq, misma transacción)
+                                         ↓
+                      Edge Function order-worker (reintentos con backoff, DLQ)
+                        factura PDF → email → envío   (pasos idempotentes)
                                                       ↓
 apps/fleet  ←  Realtime telemetry  ←  Edge Function telemetry-ingest  ←  simulador GPS
 ```
@@ -48,7 +51,6 @@ npm run dev          # store :5173 + fleet :5174
 | `VITE_SUPABASE_ANON_KEY`       | store, fleet | Anon key (pública, con RLS)   |
 | `VITE_FLEET_URL`               | store        | URL de fleet (local o Vercel) |
 | `VITE_TELEMETRY_INGEST_URL`    | fleet        | URL de `telemetry-ingest`     |
-| `VITE_TELEMETRY_INGEST_SECRET` | fleet        | API key para telemetría       |
 | `VITE_TRUCK_ID`                | fleet        | UUID demo sin `?tracking_id=` |
 
 ### Supabase Edge Function secrets
@@ -59,24 +61,21 @@ Ver [`supabase/.env.secrets.example`](supabase/.env.secrets.example). Configurar
 npx supabase secrets set --project-ref yiarfffsaciuodbplxus \
   BREVO_API_KEY="xkeysib-..." \
   SENDER_EMAIL="tu_email@dominio.com" \
-  PROCESS_ORDER_SECRET="secreto_largo_aleatorio" \
-  TELEMETRY_INGEST_SECRET="mismo_valor_que_VITE_TELEMETRY_INGEST_SECRET" \
+  ORDER_WORKER_SECRET="secreto_largo_aleatorio" \
+  DEMO_TRUCK_ID="00000000-0000-4000-8000-000000000001" \
   FLEET_TRACKING_URL="https://tu-fleet.vercel.app"
 ```
 
-### Vault (trigger automático al crear pedido)
+### Vault (despertar al worker al crear un pedido)
 
-El trigger `pg_net` lee `PROCESS_ORDER_SECRET` y `PROCESS_ORDER_URL` desde Supabase Vault. Ejecuta **una vez** en SQL Editor:
+`place_order` encola el evento y avisa al worker con `pg_net`; un barrido de `pg_cron` cada minuto recoge lo que se pierda. Ambos leen `ORDER_WORKER_SECRET` y `ORDER_WORKER_URL` de Supabase Vault. Ejecuta **una vez** en SQL Editor:
 
 ```sql
-SELECT vault.create_secret(
-  'TU_PROCESS_ORDER_SECRET',
-  'PROCESS_ORDER_SECRET',
-  'API key para trigger process-order'
-);
+SELECT vault.create_secret('TU_ORDER_WORKER_SECRET', 'ORDER_WORKER_SECRET', 'API key del order-worker');
+SELECT vault.create_secret('https://<project-ref>.supabase.co/functions/v1/order-worker', 'ORDER_WORKER_URL', 'URL del order-worker');
 ```
 
-`PROCESS_ORDER_SECRET` debe coincidir con el de Edge Function secrets. `PROCESS_ORDER_URL` es `https://<project-ref>.supabase.co/functions/v1/process-order`. El navegador ya no conoce ningún secreto de `process-order`: los pedidos se crean con la RPC `place_order` y el reintento con `request_order_processing`.
+`ORDER_WORKER_SECRET` debe coincidir con el de Edge Function secrets. El navegador no conoce ningún secreto: los pedidos se crean con la RPC `place_order` y el reproceso con `request_order_processing`.
 
 ## Despliegue
 
@@ -88,13 +87,13 @@ Guía completa: [`docs/DEPLOY.md`](docs/DEPLOY.md)
 
 ## Seguridad (portfolio)
 
-- Edge Functions protegidas con `X-API-Key` (`PROCESS_ORDER_SECRET`, `TELEMETRY_INGEST_SECRET`)
+- `order-worker` protegido con `X-API-Key` (`ORDER_WORKER_SECRET`); la cola solo es accesible con `service_role`
 - RLS en tablas de negocio; telemetría INSERT solo vía service role
 - Auth anónima: cualquier visitante puede crear pedidos demo
 - `orders` sin INSERT directo: el total se calcula en servidor (`place_order`) con los precios del catálogo
 - `shipments` solo legible por su propietario o vía `get_shipment(tracking_id)`
 - Bucket `invoices` privado (`{user_id}/{order_id}.pdf`), accesible con URLs firmadas que caducan
-- `VITE_TELEMETRY_INGEST_SECRET` sigue visible en el frontend (el simulador corre en el navegador); se elimina en F2 al mover el simulador al servidor
+- `telemetry-ingest` es público por diseño (demo, el simulador corre en el navegador): valida con Zod, solo acepta camiones conocidos (pedidos existentes o `DEMO_TRUCK_ID`) y limita a 60 pings/min por camión
 
 **Nunca commitear:** `.env`, `service_role`, `BREVO_API_KEY`, ni archivos en `supabase/.temp/`
 
@@ -106,14 +105,15 @@ Guía completa: [`docs/DEPLOY.md`](docs/DEPLOY.md)
 | `npm run dev:store`                                       | Solo tienda (:5173)          |
 | `npm run dev:fleet`                                       | Solo fleet (:5174)           |
 | `npm run build:store` / `build:fleet`                     | Builds de producción         |
-| `node --env-file=apps/store/.env scripts/smoke-order.mjs` | Test E2E pedido + telemetría |
+| `npm run test:db`                                         | Tests pgTAP (RLS, cola, DLQ) |
+| `node scripts/e2e-events.mjs`                             | E2E local del flujo (ver cabecera) |
 
 ## Migraciones
 
 ```bash
 npx supabase link --project-ref yiarfffsaciuodbplxus
 npx supabase db push
-npx supabase functions deploy process-order --no-verify-jwt
+npx supabase functions deploy order-worker --no-verify-jwt
 npx supabase functions deploy telemetry-ingest --no-verify-jwt
 ```
 

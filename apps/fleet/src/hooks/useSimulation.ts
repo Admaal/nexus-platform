@@ -72,7 +72,6 @@ export function useSimulation(addLog: AddLog, trackingId: string | null) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "X-API-Key": env.TELEMETRY_INGEST_SECRET,
           },
           body: JSON.stringify({
             truck_id: activeTruckId, 

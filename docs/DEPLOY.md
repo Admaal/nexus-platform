@@ -37,7 +37,6 @@ Dos proyectos Vercel apuntando al **mismo repositorio** de GitHub.
 | `VITE_SUPABASE_URL` | `https://yiarfffsaciuodbplxus.supabase.co` |
 | `VITE_SUPABASE_ANON_KEY` | Anon key del proyecto Supabase |
 | `VITE_TELEMETRY_INGEST_URL` | `https://yiarfffsaciuodbplxus.supabase.co/functions/v1/telemetry-ingest` |
-| `VITE_TELEMETRY_INGEST_SECRET` | Mismo valor que `TELEMETRY_INGEST_SECRET` en Supabase |
 | `VITE_CARTO_API_KEY` | Clave pública de CARTO restringida por dominio |
 | `VITE_TRUCK_ID` | `00000000-0000-4000-8000-000000000001` |
 

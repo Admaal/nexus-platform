@@ -5,8 +5,11 @@
     "moduleResolution": "Bundler",
     "noEmit": true,
     "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "allowImportingTsExtensions": true,
     "skipLibCheck": true,
-    "lib": ["ES2022", "DOM"]
+    "lib": ["ES2023", "DOM"],
+    "types": []
   },
-  "include": ["index.ts", "edge-runtime.d.ts"]
+  "include": ["*.ts", "../_shared/deno-shims.d.ts"]
 }

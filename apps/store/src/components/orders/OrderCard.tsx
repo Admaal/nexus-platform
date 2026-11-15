@@ -63,7 +63,11 @@ export function OrderCard({ order, onRetryProcess, onOpenInvoice }: OrderCardPro
                 disabled={retrying}
                 style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
               >
-                {retrying ? "Generando factura..." : "Generando factura... (se actualiza solo)"}
+                {retrying
+                  ? "Reenviando pedido..."
+                  : order.status === "FAILED"
+                    ? "No se pudo procesar. Pulsa para reintentar"
+                    : "Generando factura... (se actualiza solo)"}
               </button>
             )
           )}
