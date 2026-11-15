@@ -6,9 +6,9 @@ Este archivo es la fuente de verdad de la fase y de la valla. El historial vive 
 
 ## Fase actual
 
-**Fase 1 — seguridad y dominio en servidor.** `place_order` calcula el precio en servidor, RLS cerrada, bucket de facturas privado y sin secretos de `process-order` en el frontend. Tests: pgTAP (`npm run test:db`, requiere Docker).
+**Fase 2 — flujo por eventos.** `place_order` encola `order.created` en pgmq; `order-worker` ejecuta pasos idempotentes (factura, email, envío) con reintentos con backoff y DLQ. Reglas de reintento en `packages/domain/src/events.ts`. Tests: pgTAP + `scripts/e2e-events.mjs`.
 
-No construyas la fase siguiente (F2: flujo por eventos con cola, DLQ e idempotencia) hasta cerrar esta. Si dudas del alcance, pregunta.
+No construyas la fase siguiente (F3: tests de integración/E2E con Playwright y limpieza de tests triviales) hasta cerrar esta.
 
 ## Stack
 
