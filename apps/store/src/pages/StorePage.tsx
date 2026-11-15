@@ -73,6 +73,7 @@ export function StorePage({ cart, orders }: { cart: Cart; orders: Orders }) {
         onClose={() => setOrdersOpen(false)}
         orders={orders.orders}
         onRetryProcess={orders.retryProcessOrder}
+        onOpenInvoice={orders.openInvoice}
         checkoutWarning={state?.checkoutWarning}
       />
     </div>

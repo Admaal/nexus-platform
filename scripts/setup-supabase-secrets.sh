@@ -18,7 +18,8 @@ npx supabase secrets set --project-ref "$PROJECT_REF" \
 
 npx supabase functions deploy process-order --project-ref "$PROJECT_REF" --no-verify-jwt
 npx supabase functions deploy telemetry-ingest --project-ref "$PROJECT_REF" --no-verify-jwt
-npx supabase db query --linked -f supabase/migrations/20260729120000_secure_process_order_trigger.sql
+npx supabase db push --linked
 
 echo "Recuerda crear el secret en Vault (SQL Editor):"
 echo "SELECT vault.create_secret('$PROCESS_ORDER_SECRET', 'PROCESS_ORDER_SECRET', 'Trigger pg_net');"
+echo "SELECT vault.create_secret('https://<project-ref>.supabase.co/functions/v1/process-order', 'PROCESS_ORDER_URL', 'URL de process-order');"

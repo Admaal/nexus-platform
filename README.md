@@ -47,7 +47,6 @@ npm run dev          # store :5173 + fleet :5174
 | `VITE_SUPABASE_URL`            | store, fleet | URL del proyecto Supabase     |
 | `VITE_SUPABASE_ANON_KEY`       | store, fleet | Anon key (pública, con RLS)   |
 | `VITE_FLEET_URL`               | store        | URL de fleet (local o Vercel) |
-| `VITE_PROCESS_ORDER_SECRET`    | store        | API key para `process-order`  |
 | `VITE_TELEMETRY_INGEST_URL`    | fleet        | URL de `telemetry-ingest`     |
 | `VITE_TELEMETRY_INGEST_SECRET` | fleet        | API key para telemetría       |
 | `VITE_TRUCK_ID`                | fleet        | UUID demo sin `?tracking_id=` |
@@ -60,14 +59,14 @@ Ver [`supabase/.env.secrets.example`](supabase/.env.secrets.example). Configurar
 npx supabase secrets set --project-ref yiarfffsaciuodbplxus \
   BREVO_API_KEY="xkeysib-..." \
   SENDER_EMAIL="tu_email@dominio.com" \
-  PROCESS_ORDER_SECRET="mismo_valor_que_VITE_PROCESS_ORDER_SECRET" \
+  PROCESS_ORDER_SECRET="secreto_largo_aleatorio" \
   TELEMETRY_INGEST_SECRET="mismo_valor_que_VITE_TELEMETRY_INGEST_SECRET" \
   FLEET_TRACKING_URL="https://tu-fleet.vercel.app"
 ```
 
 ### Vault (trigger automático al crear pedido)
 
-El trigger `pg_net` lee `PROCESS_ORDER_SECRET` desde Supabase Vault. Ejecuta **una vez** en SQL Editor:
+El trigger `pg_net` lee `PROCESS_ORDER_SECRET` y `PROCESS_ORDER_URL` desde Supabase Vault. Ejecuta **una vez** en SQL Editor:
 
 ```sql
 SELECT vault.create_secret(
@@ -77,7 +76,7 @@ SELECT vault.create_secret(
 );
 ```
 
-Usa el **mismo valor** que en Edge Function secrets y `VITE_PROCESS_ORDER_SECRET`.
+`PROCESS_ORDER_SECRET` debe coincidir con el de Edge Function secrets. `PROCESS_ORDER_URL` es `https://<project-ref>.supabase.co/functions/v1/process-order`. El navegador ya no conoce ningún secreto de `process-order`: los pedidos se crean con la RPC `place_order` y el reintento con `request_order_processing`.
 
 ## Despliegue
 
@@ -92,8 +91,10 @@ Guía completa: [`docs/DEPLOY.md`](docs/DEPLOY.md)
 - Edge Functions protegidas con `X-API-Key` (`PROCESS_ORDER_SECRET`, `TELEMETRY_INGEST_SECRET`)
 - RLS en tablas de negocio; telemetría INSERT solo vía service role
 - Auth anónima: cualquier visitante puede crear pedidos demo
-- Bucket `invoices` público: facturas accesibles si se conoce el UUID del pedido
-- Las claves en `VITE_*_SECRET` son visibles en el frontend (mitigación para demo, no secretos de servidor)
+- `orders` sin INSERT directo: el total se calcula en servidor (`place_order`) con los precios del catálogo
+- `shipments` solo legible por su propietario o vía `get_shipment(tracking_id)`
+- Bucket `invoices` privado (`{user_id}/{order_id}.pdf`), accesible con URLs firmadas que caducan
+- `VITE_TELEMETRY_INGEST_SECRET` sigue visible en el frontend (el simulador corre en el navegador); se elimina en F2 al mover el simulador al servidor
 
 **Nunca commitear:** `.env`, `service_role`, `BREVO_API_KEY`, ni archivos en `supabase/.temp/`
 

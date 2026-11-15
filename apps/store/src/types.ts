@@ -23,7 +23,7 @@ export interface Order {
   customer_email: string;
   customer_name: string | null;
   shipping_address: string | null;
-  invoice_url: string | null;
+  invoice_path: string | null;
   status: OrderStatus;
   created_at: string;
   items: OrderItem[];

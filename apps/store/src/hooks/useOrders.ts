@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../contexts/AuthContext";
-import { invokeProcessOrder } from "../lib/processOrder";
 import type { CartItem, CustomerInfo, Order } from "../types";
+
+const INVOICE_URL_TTL_SECONDS = 60 * 10;
 
 export interface CreateOrderResult {
   error: { message: string } | null;
@@ -57,24 +58,7 @@ export function useOrders() {
     };
   }, [user, fetchOrders]);
 
-  // Reintenta pedidos PENDING (el navegador a veces no llega a la Edge Function en el checkout)
-  useEffect(() => {
-    const pending = orders.filter((o) => o.status === "PENDING");
-    if (pending.length === 0) return undefined;
-
-    const processPending = () => {
-      pending.forEach((order) => {
-        invokeProcessOrder(order.id)
-          .then(() => fetchOrders())
-          .catch(() => {});
-      });
-    };
-
-    processPending();
-    const interval = setInterval(processPending, 5000);
-    return () => clearInterval(interval);
-  }, [orders, fetchOrders]);
-
+  /** El servidor calcula el total con el catálogo: solo se envían ids y cantidades. */
   const createOrder = useCallback(async (
     items: CartItem[],
     customerInfo: CustomerInfo,
@@ -91,42 +75,30 @@ export function useOrders() {
         return { error: { message: "No se pudo iniciar sesión. Recarga la página e inténtalo de nuevo." } };
       }
 
-      const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
-      const orderItems = items.map((item) => ({
-        product_id: item.id,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-      }));
+      const { data: orderId, error: rpcError } = await supabase.rpc("place_order", {
+        p_items: items.map((item) => ({ product_id: item.id, quantity: item.quantity })),
+        p_customer_name: customerInfo.name,
+        p_customer_email: customerInfo.email,
+        p_shipping_address: customerInfo.address,
+      });
 
-      const insert = {
-        customer_email: customerInfo.email,
-        customer_name: customerInfo.name,
-        shipping_address: customerInfo.address,
-        items: orderItems,
-        total,
-        user_id: activeUser.id,
-      };
-
-      const { data, error: insertError } = await supabase
-        .from("orders")
-        .insert(insert)
-        .select()
-        .single();
-
-      if (insertError) {
-        return { error: insertError };
+      if (rpcError) {
+        return { error: rpcError };
       }
 
-      const order = data as Order;
-
-      void invokeProcessOrder(order.id).catch((err: unknown) => {
-        console.warn("process-order background:", err);
-      });
+      const { data, error: readError } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("id", orderId as string)
+        .single();
 
       await fetchOrders();
 
-      return { error: null, order };
+      if (readError || !data) {
+        return { error: null, warning: "Pedido creado, pero no se pudo leer su estado todavía." };
+      }
+
+      return { error: null, order: data as Order };
     } catch (error) {
       const message = error instanceof Error ? error.message : "Error desconocido";
       return { error: { message } };
@@ -135,16 +107,26 @@ export function useOrders() {
     }
   }, [user, ensureAuth, fetchOrders]);
 
+  /** Pide al servidor que vuelva a procesar el pedido (solo el propietario). */
   const retryProcessOrder = useCallback(async (orderId: string) => {
-    try {
-      const data = await invokeProcessOrder(orderId);
-      await fetchOrders();
-      return { data, error: null };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return { data: null, error: { message } };
-    }
+    const { error } = await supabase.rpc("request_order_processing", { p_order_id: orderId });
+    if (error) return { data: null, error: { message: error.message } };
+    await fetchOrders();
+    return { data: { requested: true }, error: null };
   }, [fetchOrders]);
 
-  return { orders, loading, fetchOrders, createOrder, retryProcessOrder };
+  /** Abre la factura con una URL firmada de corta duración. */
+  const openInvoice = useCallback(async (order: Order) => {
+    if (!order.invoice_path) return;
+    const { data, error } = await supabase.storage
+      .from("invoices")
+      .createSignedUrl(order.invoice_path, INVOICE_URL_TTL_SECONDS);
+    if (error || !data) {
+      console.error("No se pudo firmar la factura:", error);
+      return;
+    }
+    window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+  }, []);
+
+  return { orders, loading, fetchOrders, createOrder, retryProcessOrder, openInvoice };
 }

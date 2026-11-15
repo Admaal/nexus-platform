@@ -26,6 +26,17 @@ function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
+const INVOICE_LINK_TTL_SECONDS = 60 * 60 * 24 * 7;
+
+function escapeHtml(value: unknown): string {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function isAuthorized(req: Request): boolean {
   if (!processOrderSecret) return false;
   return req.headers.get("X-API-Key") === processOrderSecret;
@@ -96,16 +107,16 @@ serve(async (req: Request) => {
 
     const { data: existing } = await supabase
       .from("orders")
-      .select("status, invoice_url")
+      .select("status, invoice_path")
       .eq("id", order.id)
       .single();
 
-    if (existing?.status === "COMPLETED" && existing.invoice_url) {
+    if (existing?.status === "COMPLETED" && existing.invoice_path) {
       return jsonResponse({
         success: true,
         alreadyCompleted: true,
         emailSent: true,
-        invoiceUrl: existing.invoice_url,
+        invoicePath: existing.invoice_path,
       });
     }
 
@@ -161,20 +172,32 @@ serve(async (req: Request) => {
     const pdfBytes = await pdfDoc.save();
 
     // 2. SUBIR PDF
-    const fileName = `factura_${order.id}.pdf`;
-    await supabase.storage.from('invoices').upload(fileName, pdfBytes, { contentType: 'application/pdf', upsert: true });
-    const { data: { publicUrl } } = supabase.storage.from('invoices').getPublicUrl(fileName);
+    // Bucket privado: {user_id}/{order_id}.pdf, accesible solo con URL firmada.
+    const invoicePath = `${order.user_id}/${order.id}.pdf`;
+    const { error: uploadError } = await supabase.storage
+      .from('invoices')
+      .upload(invoicePath, pdfBytes, { contentType: 'application/pdf', upsert: true });
+    if (uploadError) throw new Error(`No se pudo subir la factura: ${uploadError.message}`);
+
+    const { data: signed, error: signError } = await supabase.storage
+      .from('invoices')
+      .createSignedUrl(invoicePath, INVOICE_LINK_TTL_SECONDS);
+    if (signError || !signed?.signedUrl) {
+      throw new Error(`No se pudo firmar la URL de la factura: ${signError?.message ?? 'sin URL'}`);
+    }
+    const invoiceUrl: string = signed.signedUrl;
 
     // 3. Marcar envío en tránsito (shipment ya creado por trigger)
-    await supabase
+    const { error: shipmentError } = await supabase
       .from('shipments')
       .update({ status: 'IN_TRANSIT' })
       .eq('order_id', order.id);
+    if (shipmentError) throw new Error(`No se pudo actualizar el envío: ${shipmentError.message}`);
 
     // 4. ENVIAR EMAIL
     const trackingLink = `${fleetTrackingUrl}/?tracking_id=${order.id}`;
     const itemsHtml = items.map((i: { quantity: number; name: string; price: number }) =>
-      `<li>${i.quantity}x ${i.name} - ${i.price}€</li>`
+      `<li>${escapeHtml(i.quantity)}x ${escapeHtml(i.name)} - ${escapeHtml(i.price)}€</li>`
     ).join("");
 
     let emailSent = false;
@@ -186,7 +209,7 @@ serve(async (req: Request) => {
         `Factura de tu pedido #${order.id.split("-")[0].toUpperCase()}`,
         `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-            <h2 style="color: #1A1A1A;">¡Gracias por tu pedido, ${order.customer_name || "cliente"}!</h2>
+            <h2 style="color: #1A1A1A;">¡Gracias por tu pedido, ${escapeHtml(order.customer_name || "cliente")}!</h2>
             <p>Tu pedido ha sido procesado correctamente y hemos generado tu factura oficial.</p>
 
             <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
@@ -197,9 +220,9 @@ serve(async (req: Request) => {
               <h3 style="border-top: 1px solid #ddd; padding-top: 15px;">Total: ${orderTotal.toFixed(2)}€</h3>
             </div>
 
-            <a href="${publicUrl}" style="background-color: #1A1A1A; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; margin-bottom: 15px;">Descargar Factura PDF</a>
+            <a href="${invoiceUrl}" style="background-color: #1A1A1A; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; margin-bottom: 15px;">Descargar Factura PDF</a>
             <br />
-            <a href="${trackingLink}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Rastrear tu envío en tiempo real</a>
+            <a href="${escapeHtml(trackingLink)}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Rastrear tu envío en tiempo real</a>
           </div>
         `,
       );
@@ -210,13 +233,17 @@ serve(async (req: Request) => {
     }
 
     // 5. ACTUALIZAR ESTADO (aunque falle el email)
-    await supabase.from('orders').update({ status: 'COMPLETED', invoice_url: publicUrl }).eq('id', order.id);
+    const { error: completeError } = await supabase
+      .from('orders')
+      .update({ status: 'COMPLETED', invoice_path: invoicePath })
+      .eq('id', order.id);
+    if (completeError) throw new Error(`No se pudo completar el pedido: ${completeError.message}`);
 
     return jsonResponse({
       success: true,
       emailSent,
       ...(emailError ? { emailError } : {}),
-      invoiceUrl: publicUrl,
+      invoicePath,
       trackingLink,
     });
 

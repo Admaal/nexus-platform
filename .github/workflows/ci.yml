@@ -34,14 +34,28 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ci-placeholder
         run: ./scripts/gates.ps1 ci
 
+  db-tests:
+    name: Tests de base de datos (pgTAP)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Arrancar Supabase local
+        run: supabase start -x studio,imgproxy,mailpit,logflare,vector,edge-runtime,realtime,postgres-meta,supavisor
+      - name: supabase test db
+        run: supabase test db
+
   gate:
     name: Gate obligatorio
     if: ${{ always() }}
-    needs: [gates]
+    needs: [gates, db-tests]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Comprobar resultados
         shell: pwsh
         run: |
-          if ("${{ needs.gates.result }}" -ne "success") { exit 1 }
+          if ("${{ needs.gates.result }}" -ne "success" -or "${{ needs.db-tests.result }}" -ne "success") { exit 1 }

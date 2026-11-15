@@ -19,7 +19,8 @@ if ($FleetTrackingUrl) { $secrets += "FLEET_TRACKING_URL=$FleetTrackingUrl" }
 npx supabase secrets set --project-ref $ProjectRef @secrets
 npx supabase functions deploy process-order --project-ref $ProjectRef --no-verify-jwt
 npx supabase functions deploy telemetry-ingest --project-ref $ProjectRef --no-verify-jwt
-npx supabase db query --linked -f supabase/migrations/20260729120000_secure_process_order_trigger.sql
+npx supabase db push --linked
 
 Write-Host "Ejecuta en SQL Editor de Supabase:"
 Write-Host "SELECT vault.create_secret('$ProcessOrderSecret', 'PROCESS_ORDER_SECRET', 'Trigger pg_net');"
+Write-Host "SELECT vault.create_secret('https://<project-ref>.supabase.co/functions/v1/process-order', 'PROCESS_ORDER_URL', 'URL de process-order');"
