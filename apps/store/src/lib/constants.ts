@@ -1,9 +1,9 @@
-const productAsset = (key) => ({
+const productAsset = (key: string) => ({
   src: `/images/products/${key}-640.webp`,
   srcSet: `/images/products/${key}-360.webp 360w, /images/products/${key}-640.webp 640w`,
 });
 
-export const PRODUCT_IMAGE_ASSETS = {
+export const PRODUCT_IMAGE_ASSETS: Record<string, { src: string; srcSet: string }> = {
   teclado: productAsset("teclado"),
   monitor: productAsset("monitor"),
   auriculares: productAsset("auriculares"),
@@ -21,7 +21,7 @@ export const PRODUCT_IMAGES = Object.fromEntries(
   Object.entries(PRODUCT_IMAGE_ASSETS).map(([key, asset]) => [key, asset.src]),
 );
 
-const PRODUCT_MATCHERS = [
+const PRODUCT_MATCHERS: readonly (readonly [string, string])[] = [
   ["teclado", "teclado"],
   ["monitor", "monitor"],
   ["auriculares", "auriculares"],
@@ -36,6 +36,8 @@ const PRODUCT_MATCHERS = [
   ["escritorio", "escritorio"],
 ];
 
+const DEFAULT_ASSET = productAsset("default");
+
 export const ORDER_STATUS = {
   PENDING: "PENDING",
   PROCESSING: "PROCESSING",
@@ -46,9 +48,10 @@ export const ORDER_STATUS = {
 export const getProductImageAsset = (name = "") => {
   const lower = name.toLowerCase();
   for (const [matcher, assetKey] of PRODUCT_MATCHERS) {
-    if (lower.includes(matcher)) return PRODUCT_IMAGE_ASSETS[assetKey];
+    const asset = PRODUCT_IMAGE_ASSETS[assetKey];
+    if (lower.includes(matcher) && asset) return asset;
   }
-  return PRODUCT_IMAGE_ASSETS.default;
+  return DEFAULT_ASSET;
 };
 
 export const getProductImage = (name = "") => getProductImageAsset(name).src;

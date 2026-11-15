@@ -1,7 +1,14 @@
 import { ResponsiveImage } from "../ui/ResponsiveImage";
 import { getProductImageSources } from "../../lib/constants";
+import type { CartItem as CartItemData } from "../../types";
 
-export function CartItem({ item, onRemove, onUpdateQuantity }) {
+interface CartItemProps {
+  item: CartItemData;
+  onRemove: (id: string) => void;
+  onUpdateQuantity: (id: string, quantity: number) => void;
+}
+
+export function CartItem({ item, onRemove, onUpdateQuantity }: CartItemProps) {
   const image = getProductImageSources(item.name);
 
   return (

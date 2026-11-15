@@ -5,7 +5,7 @@ import { Sidebar } from "./components/Sidebar";
 import { FleetMap } from "./components/FleetMap";
 import { PackageIcon } from "./components/ui/Icon";
 import type { LogEntry, LogType } from "./types";
-import { orderRef } from "./lib/orderRef";
+import { orderRef } from "@nexus/domain";
 
 let logIdCounter = 0;
 

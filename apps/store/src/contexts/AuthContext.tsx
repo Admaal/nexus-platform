@@ -1,10 +1,17 @@
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import type { User } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
 
-const AuthContext = createContext();
+interface AuthContextValue {
+  user: User | null;
+  loadingAuth: boolean;
+  ensureAuth: () => Promise<User | null>;
+}
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
 
   const ensureAuth = useCallback(async () => {
@@ -51,4 +58,8 @@ export function AuthProvider({ children }) {
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = (): AuthContextValue => {
+  const value = useContext(AuthContext);
+  if (!value) throw new Error("useAuth debe usarse dentro de <AuthProvider>");
+  return value;
+};

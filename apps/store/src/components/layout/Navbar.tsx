@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
 
-export function Navbar({ itemCount, onCartOpen, onOrdersOpen }) {
+interface NavbarProps {
+  itemCount: number;
+  onCartOpen: () => void;
+  onOrdersOpen: () => void;
+}
+
+export function Navbar({ itemCount, onCartOpen, onOrdersOpen }: NavbarProps) {
   return (
     <nav className="navbar">
       <div className="container navbar__inner">

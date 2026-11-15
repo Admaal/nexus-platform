@@ -10,12 +10,20 @@ import { ProductGrid } from "../components/products/ProductGrid";
 import { CartDrawer } from "../components/cart/CartDrawer";
 import { OrdersDrawer } from "../components/orders/OrdersDrawer";
 import { useProducts } from "../hooks/useProducts";
+import type { Cart } from "../hooks/useCart";
+import type { Orders } from "../hooks/useOrders";
 
-export function StorePage({ cart, orders }) {
+interface LocationState {
+  ordersOpen?: boolean;
+  checkoutWarning?: string;
+}
+
+export function StorePage({ cart, orders }: { cart: Cart; orders: Orders }) {
   const { products, loading } = useProducts();
   const location = useLocation();
+  const state = location.state as LocationState | null;
   const [cartOpen, setCartOpen] = useState(false);
-  const [ordersOpen, setOrdersOpen] = useState(() => !!location.state?.ordersOpen);
+  const [ordersOpen, setOrdersOpen] = useState(() => !!state?.ordersOpen);
 
   const scrollToProducts = () => {
     document.getElementById("productos")?.scrollIntoView({ behavior: "smooth" });
@@ -65,7 +73,7 @@ export function StorePage({ cart, orders }) {
         onClose={() => setOrdersOpen(false)}
         orders={orders.orders}
         onRetryProcess={orders.retryProcessOrder}
-        checkoutWarning={location.state?.checkoutWarning}
+        checkoutWarning={state?.checkoutWarning}
       />
     </div>
   );

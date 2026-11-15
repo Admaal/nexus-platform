@@ -7,20 +7,42 @@ import { OrderCard } from "../orders/OrderCard";
 import { OrdersDrawer } from "../orders/OrdersDrawer";
 import { ReviewsSection } from "../sections/ReviewsSection";
 import { CheckoutPage } from "../../pages/CheckoutPage";
+import type { Cart } from "../../hooks/useCart";
+import type { Orders } from "../../hooks/useOrders";
+import type { Order } from "../../types";
 
 const forbiddenIconCharacters =
   /[\u{1F000}-\u{1FAFF}\u{2100}-\u{214F}\u{2190}-\u{21FF}\u{2300}-\u{23FF}\u{2600}-\u{27BF}]/u;
 
-const emptyCart = {
+const emptyCart: Cart = {
   items: [],
   itemCount: 0,
   total: 0,
+  addItem: () => undefined,
   removeItem: () => undefined,
   updateQuantity: () => undefined,
+  clearCart: () => undefined,
 };
 
-const emptyOrders = {
+const emptyOrders: Orders = {
   orders: [],
+  loading: false,
+  fetchOrders: () => Promise.resolve(),
+  createOrder: () => Promise.resolve({ error: null }),
+  retryProcessOrder: () => Promise.resolve({ data: null, error: null }),
+};
+
+const completedOrder: Order = {
+  id: "12345678-1234-1234-1234-123456789012",
+  customer_email: "ada@mail.com",
+  customer_name: "Ada",
+  shipping_address: "Calle Mayor 1",
+  status: "COMPLETED",
+  invoice_url: "/invoice.pdf",
+  created_at: "2026-01-01T00:00:00Z",
+  total: 19.99,
+  items: [],
+  user_id: null,
 };
 
 describe("iconografía de la tienda / AC-01 a AC-09", () => {
@@ -43,13 +65,7 @@ describe("iconografía de la tienda / AC-01 a AC-09", () => {
         <CheckoutPage cart={emptyCart} orders={emptyOrders} />
         <Footer />
         <OrderCard
-          order={{
-            id: "12345678-1234-1234-1234-123456789012",
-            status: "COMPLETED",
-            invoice_url: "/invoice.pdf",
-            total: 19.99,
-            items: [],
-          }}
+          order={completedOrder}
           onRetryProcess={() => undefined}
         />
       </MemoryRouter>,

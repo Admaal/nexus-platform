@@ -1,10 +1,19 @@
+import type { ReactNode } from "react";
+
+export interface IconProps {
+  className?: string;
+  fill?: string;
+  stroke?: string;
+  strokeWidth?: number;
+}
+
 function IconBase({
   children,
   className,
   fill = "none",
   stroke = "currentColor",
   strokeWidth = 1.75,
-}) {
+}: IconProps & { children: ReactNode }) {
   return (
     <svg
       className={className}
@@ -22,7 +31,7 @@ function IconBase({
   );
 }
 
-export function CartIcon(props) {
+export function CartIcon(props: IconProps) {
   return (
     <IconBase {...props}>
       <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6" />
@@ -32,7 +41,7 @@ export function CartIcon(props) {
   );
 }
 
-export function PackageIcon(props) {
+export function PackageIcon(props: IconProps) {
   return (
     <IconBase {...props}>
       <path d="m4 7 8-4 8 4-8 4-8-4Z" />
@@ -43,7 +52,7 @@ export function PackageIcon(props) {
   );
 }
 
-export function FileIcon(props) {
+export function FileIcon(props: IconProps) {
   return (
     <IconBase {...props}>
       <path d="M6 3h8l4 4v14H6z" />
@@ -53,7 +62,7 @@ export function FileIcon(props) {
   );
 }
 
-export function TruckIcon(props) {
+export function TruckIcon(props: IconProps) {
   return (
     <IconBase {...props}>
       <path d="M3 6h11v10H3z" />
@@ -64,7 +73,7 @@ export function TruckIcon(props) {
   );
 }
 
-export function InfoIcon(props) {
+export function InfoIcon(props: IconProps) {
   return (
     <IconBase {...props}>
       <circle cx="12" cy="12" r="9" />
@@ -74,7 +83,7 @@ export function InfoIcon(props) {
   );
 }
 
-export function WarningIcon(props) {
+export function WarningIcon(props: IconProps) {
   return (
     <IconBase {...props}>
       <path d="m12 3 9 17H3L12 3Z" />
@@ -84,7 +93,7 @@ export function WarningIcon(props) {
   );
 }
 
-export function ArrowRightIcon(props) {
+export function ArrowRightIcon(props: IconProps) {
   return (
     <IconBase {...props}>
       <path d="M5 12h14" />
@@ -93,7 +102,7 @@ export function ArrowRightIcon(props) {
   );
 }
 
-export function StarIcon(props) {
+export function StarIcon(props: IconProps) {
   return (
     <IconBase {...props} fill="currentColor" stroke="currentColor">
       <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z" />

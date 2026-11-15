@@ -1,11 +1,19 @@
 import { useState } from "react";
 import { Badge } from "../ui/Badge";
 import { FileIcon, TruckIcon } from "../ui/Icon";
+import { orderRef } from "@nexus/domain";
+import type { Order } from "../../types";
 
-export function OrderCard({ order, onRetryProcess }) {
+interface OrderCardProps {
+  order: Order;
+  onRetryProcess?: ((orderId: string) => unknown) | undefined;
+}
+
+export function OrderCard({ order, onRetryProcess }: OrderCardProps) {
   const isCompleted = order.status === "COMPLETED";
-  const ref = order.id?.split("-")[0].toUpperCase();
+  const ref = orderRef(order.id);
   const [retrying, setRetrying] = useState(false);
+  const firstItem = order.items[0];
 
   const handleRetry = async () => {
     if (!onRetryProcess || retrying) return;
@@ -21,8 +29,8 @@ export function OrderCard({ order, onRetryProcess }) {
     <div className="order-card">
       <div className="order-card__header">
         <strong className="order-card__name">
-          {order.items?.length > 0
-            ? `${order.items[0].name}${order.items.length > 1 ? ` y ${order.items.length - 1} más` : ""}`
+          {firstItem
+            ? `${firstItem.name}${order.items.length > 1 ? ` y ${order.items.length - 1} más` : ""}`
             : "Pedido Web"}
         </strong>
         <Badge status={order.status} />

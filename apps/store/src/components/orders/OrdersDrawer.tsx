@@ -1,7 +1,16 @@
 import { OrderCard } from "./OrderCard";
 import { PackageIcon } from "../ui/Icon";
+import type { Order } from "../../types";
 
-export function OrdersDrawer({ isOpen, onClose, orders, onRetryProcess, checkoutWarning }) {
+interface OrdersDrawerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  orders: Order[];
+  onRetryProcess?: (orderId: string) => unknown;
+  checkoutWarning?: string | undefined;
+}
+
+export function OrdersDrawer({ isOpen, onClose, orders, onRetryProcess, checkoutWarning }: OrdersDrawerProps) {
   return (
     <>
       {isOpen && <div className="overlay" onClick={onClose} />}

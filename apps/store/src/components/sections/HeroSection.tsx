@@ -8,7 +8,7 @@ const HERO_IMAGE = {
   fallbackSrc: "/images/hero/hero-fallback.jpg",
 };
 
-export function HeroSection({ onShopClick }) {
+export function HeroSection({ onShopClick }: { onShopClick: () => void }) {
   return (
     <section className="hero">
       <ResponsiveImage

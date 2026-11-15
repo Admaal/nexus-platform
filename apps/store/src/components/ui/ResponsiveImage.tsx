@@ -1,5 +1,19 @@
 import { useState } from "react";
 
+interface ResponsiveImageProps {
+  src: string;
+  srcSet?: string;
+  sizes?: string;
+  fallbackSrc?: string;
+  alt: string;
+  className?: string;
+  loading?: "lazy" | "eager";
+  fetchPriority?: "high" | "low" | "auto";
+  decoding?: "async" | "sync" | "auto";
+  width?: number;
+  height?: number;
+}
+
 export function ResponsiveImage({
   src,
   srcSet,
@@ -12,7 +26,7 @@ export function ResponsiveImage({
   decoding = "async",
   width,
   height,
-}) {
+}: ResponsiveImageProps) {
   const [hasError, setHasError] = useState(false);
   const imageSrc = hasError ? fallbackSrc : fallbackSrc || src;
   const handleError = () => setHasError(true);

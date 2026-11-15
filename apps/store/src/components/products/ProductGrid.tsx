@@ -1,4 +1,5 @@
 import { ProductCard } from "./ProductCard";
+import type { Product } from "../../types";
 
 function SkeletonCard() {
   return (
@@ -13,7 +14,13 @@ function SkeletonCard() {
   );
 }
 
-export function ProductGrid({ products, loading, onAddToCart }) {
+interface ProductGridProps {
+  products: Product[];
+  loading: boolean;
+  onAddToCart: (product: Product) => void;
+}
+
+export function ProductGrid({ products, loading, onAddToCart }: ProductGridProps) {
   if (loading) {
     return (
       <div className="product-grid">

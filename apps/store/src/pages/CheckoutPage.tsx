@@ -10,6 +10,8 @@ import { ArrowRightIcon, CartIcon, InfoIcon } from "../components/ui/Icon";
 import { getProductImageSources } from "../lib/constants";
 import { CartDrawer } from "../components/cart/CartDrawer";
 import { OrdersDrawer } from "../components/orders/OrdersDrawer";
+import type { Cart } from "../hooks/useCart";
+import type { Orders } from "../hooks/useOrders";
 
 const checkoutSchema = z.object({
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
@@ -17,9 +19,11 @@ const checkoutSchema = z.object({
   address: z.string().min(5, "La dirección es obligatoria y debe ser real"),
 });
 
-export function CheckoutPage({ cart, orders }) {
+type CheckoutFormData = z.infer<typeof checkoutSchema>;
+
+export function CheckoutPage({ cart, orders }: { cart: Cart; orders: Orders }) {
   const navigate = useNavigate();
-  const [globalError, setGlobalError] = useState(null);
+  const [globalError, setGlobalError] = useState<string | null>(null);
   const [cartOpen, setCartOpen] = useState(false);
   const [ordersOpen, setOrdersOpen] = useState(false);
   
@@ -27,7 +31,7 @@ export function CheckoutPage({ cart, orders }) {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm({
+  } = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
       name: "",
@@ -36,7 +40,7 @@ export function CheckoutPage({ cart, orders }) {
     },
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: CheckoutFormData) => {
     setGlobalError(null);
     const { error, warning } = await orders.createOrder(cart.items, data);
 

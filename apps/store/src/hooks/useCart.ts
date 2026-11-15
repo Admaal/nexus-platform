@@ -1,19 +1,23 @@
 import { useCallback, useEffect, useState } from "react";
 
+import type { CartItem, Product } from "../types";
+
 const CART_KEY = "nexus_cart";
 
-function loadCart() {
+function loadCart(): CartItem[] {
   try {
     const rawData = localStorage.getItem(CART_KEY);
     if (!rawData) return [];
     
     const parsed = JSON.parse(rawData);
     // Prevención estricta: si el JSON.parse no devuelve un Array (ej. inyección de string) caemos al vacío
-    return Array.isArray(parsed) ? parsed : [];
+    return Array.isArray(parsed) ? (parsed as CartItem[]) : [];
   } catch {
     return [];
   }
 }
+
+export type Cart = ReturnType<typeof useCart>;
 
 export function useCart() {
   const [items, setItems] = useState(loadCart);
@@ -22,7 +26,7 @@ export function useCart() {
     localStorage.setItem(CART_KEY, JSON.stringify(items));
   }, [items]);
 
-  const addItem = useCallback((product) => {
+  const addItem = useCallback((product: Product) => {
     setItems((prev) => {
       const existing = prev.find((i) => i.id === product.id);
       if (existing) {
@@ -34,11 +38,11 @@ export function useCart() {
     });
   }, []);
 
-  const removeItem = useCallback((id) => {
+  const removeItem = useCallback((id: string) => {
     setItems((prev) => prev.filter((i) => i.id !== id));
   }, []);
 
-  const updateQuantity = useCallback((id, quantity) => {
+  const updateQuantity = useCallback((id: string, quantity: number) => {
     if (quantity < 1) return;
     setItems((prev) =>
       prev.map((i) => (i.id === id ? { ...i, quantity } : i))

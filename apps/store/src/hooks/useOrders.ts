@@ -2,9 +2,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../contexts/AuthContext";
 import { invokeProcessOrder } from "../lib/processOrder";
+import type { CartItem, CustomerInfo, Order } from "../types";
+
+export interface CreateOrderResult {
+  error: { message: string } | null;
+  order?: Order;
+  warning?: string;
+}
+
+export type Orders = ReturnType<typeof useOrders>;
 
 export function useOrders() {
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
   const isMounted = useRef(true);
   const { user, ensureAuth } = useAuth();
@@ -17,7 +26,8 @@ export function useOrders() {
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (data && isMounted.current) setOrders(data);
+    // Cliente sin tipos generados: el esquema de `orders` está descrito en ../types.
+    if (data && isMounted.current) setOrders(data as Order[]);
     if (error) console.error(error);
   }, [user]);
 
@@ -25,21 +35,20 @@ export function useOrders() {
     isMounted.current = true;
 
     if (user) {
-      // eslint-disable-next-line
-      fetchOrders();
+      void fetchOrders();
 
       const channel = supabase
         .channel("public:orders")
         .on(
           "postgres_changes",
           { event: "*", schema: "public", table: "orders" },
-          () => fetchOrders()
+          () => void fetchOrders()
         )
         .subscribe();
 
       return () => {
         isMounted.current = false;
-        supabase.removeChannel(channel);
+        void supabase.removeChannel(channel);
       };
     }
 
@@ -66,7 +75,10 @@ export function useOrders() {
     return () => clearInterval(interval);
   }, [orders, fetchOrders]);
 
-  const createOrder = useCallback(async (items, customerInfo) => {
+  const createOrder = useCallback(async (
+    items: CartItem[],
+    customerInfo: CustomerInfo,
+  ): Promise<CreateOrderResult> => {
     if (!items || items.length === 0) {
       return { error: { message: "El carrito está vacío" } };
     }
@@ -96,7 +108,7 @@ export function useOrders() {
         user_id: activeUser.id,
       };
 
-      const { data: order, error: insertError } = await supabase
+      const { data, error: insertError } = await supabase
         .from("orders")
         .insert(insert)
         .select()
@@ -106,7 +118,9 @@ export function useOrders() {
         return { error: insertError };
       }
 
-      void invokeProcessOrder(order.id).catch((err) => {
+      const order = data as Order;
+
+      void invokeProcessOrder(order.id).catch((err: unknown) => {
         console.warn("process-order background:", err);
       });
 
@@ -121,7 +135,7 @@ export function useOrders() {
     }
   }, [user, ensureAuth, fetchOrders]);
 
-  const retryProcessOrder = useCallback(async (orderId) => {
+  const retryProcessOrder = useCallback(async (orderId: string) => {
     try {
       const data = await invokeProcessOrder(orderId);
       await fetchOrders();

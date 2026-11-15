@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 
 export function NewsletterSection() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (email.includes("@")) setSubmitted(true);
   };

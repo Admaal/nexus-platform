@@ -2,7 +2,7 @@ const PROCESS_ORDER_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/pro
 const PROCESS_ORDER_SECRET = import.meta.env.VITE_PROCESS_ORDER_SECRET;
 
 /** Llamada directa a process-order con API key compartida. */
-export async function invokeProcessOrder(orderId) {
+export async function invokeProcessOrder(orderId: string): Promise<unknown> {
   if (!PROCESS_ORDER_SECRET) {
     throw new Error("VITE_PROCESS_ORDER_SECRET no configurada");
   }
@@ -17,9 +17,9 @@ export async function invokeProcessOrder(orderId) {
   });
 
   const text = await response.text();
-  let data = null;
+  let data: { error?: string; raw?: string } | null = null;
   try {
-    data = text ? JSON.parse(text) : null;
+    data = text ? (JSON.parse(text) as { error?: string }) : null;
   } catch {
     data = { raw: text };
   }

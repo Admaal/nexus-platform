@@ -30,7 +30,7 @@ describe("catálogo de imágenes / AC-05 y AC-06", () => {
     const assets = Object.values(PRODUCT_IMAGE_ASSETS);
 
     for (const asset of assets) {
-      const fileName = asset.src.split("/").pop();
+      const fileName = asset.src.split("/").pop() ?? "";
       const filePath = join(imageDirectory, fileName);
       const contents = await readFile(filePath);
 

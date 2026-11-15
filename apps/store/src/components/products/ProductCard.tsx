@@ -1,7 +1,13 @@
 import { ResponsiveImage } from "../ui/ResponsiveImage";
 import { getProductImageSources } from "../../lib/constants";
+import type { Product } from "../../types";
 
-export function ProductCard({ product, onAddToCart }) {
+interface ProductCardProps {
+  product: Product;
+  onAddToCart: (product: Product) => void;
+}
+
+export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const image = getProductImageSources(product.name);
 
   return (

@@ -21,7 +21,7 @@ const REVIEWS = [
   },
 ];
 
-function Stars({ count }) {
+function Stars({ count }: { count: number }) {
   return (
     <div className="review-card__stars" aria-label={`${count} de 5 estrellas`}>
       {Array.from({ length: count }, (_, index) => (

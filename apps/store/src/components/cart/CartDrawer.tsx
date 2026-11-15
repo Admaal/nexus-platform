@@ -2,8 +2,18 @@ import { useNavigate } from "react-router-dom";
 import { CartItem } from "./CartItem";
 import { Button } from "../ui/Button";
 import { ArrowRightIcon, CartIcon } from "../ui/Icon";
+import type { CartItem as CartItemData } from "../../types";
 
-export function CartDrawer({ isOpen, onClose, items, total, onRemove, onUpdateQuantity }) {
+interface CartDrawerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  items: CartItemData[];
+  total: number;
+  onRemove: (id: string) => void;
+  onUpdateQuantity: (id: string, quantity: number) => void;
+}
+
+export function CartDrawer({ isOpen, onClose, items, total, onRemove, onUpdateQuantity }: CartDrawerProps) {
   const navigate = useNavigate();
 
   const handleCheckout = () => {
