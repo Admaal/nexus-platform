@@ -16,9 +16,10 @@
     "build:fleet": "npm run build -w apps/fleet",
     "lint": "npm run lint --workspaces --if-present",
     "assets:store": "node scripts/generate-store-image-assets.mjs && node scripts/download-store-font.mjs",
-    "typecheck": "npm run typecheck --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present && npm run typecheck:functions",
     "test": "npm run test --workspaces --if-present",
-    "mutation": "npm run mutation -w @nexus/domain"
+    "mutation": "npm run mutation -w @nexus/domain",
+    "typecheck:functions": "tsc -p supabase/functions/process-order && tsc -p supabase/functions/telemetry-ingest"
   },
   "author": "Admaal",
   "license": "MIT",

@@ -6,13 +6,13 @@ Este archivo es la fuente de verdad de la fase y de la valla. El historial vive 
 
 ## Fase actual
 
-**Fase 0 — base y valla.** TypeScript estricto, CI y dominio puro con mutation testing.
+**Fase 0 — base y valla (cerrando).** TypeScript estricto en apps y Edge Functions, CI y dominio puro con mutation testing.
 
 No construyas la fase siguiente (F1: seguridad y dominio en servidor) hasta cerrar esta. Si dudas del alcance, pregunta.
 
 ## Stack
 
-- Lenguaje: TypeScript estricto (`tsconfig.base.json`). Apps en migración desde JS (`allowJs` solo mientras dure).
+- Lenguaje: TypeScript estricto (`tsconfig.base.json`) en `apps/*`, `packages/domain` y Edge Functions (los tipos de Deno son shims hasta F2).
 - Frontend: React 19 + Vite (`apps/store`, `apps/fleet`). Backend: Supabase (Postgres, Edge Functions en Deno, Realtime).
 - Tests: Vitest (`npm test`). Mutation: Stryker.
 - Dominio: `packages/domain/src/` (puro, sin framework ni E/S).
