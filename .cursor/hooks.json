@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "hooks": {
+    "postToolUse": [
+      {
+        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .cursor/hooks/post-tool-use.ps1",
+        "timeout": 120,
+        "matcher": "Write"
+      }
+    ],
+    "stop": [
+      {
+        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .cursor/hooks/stop.ps1",
+        "timeout": 1800,
+        "loop_limit": 3
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .cursor/hooks/guard-shell.ps1",
+        "timeout": 10
+      }
+    ]
+  }
+}

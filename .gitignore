@@ -4,7 +4,8 @@ dist/
 # Docs internas (SDD, performance) — no publicar en portfolio
 docs/specs/
 docs/performance/
-.cursor/
+.cursor/hooks/gauntlet.lock
+.cursor/hooks/gate-timings.log
 coverage/
 **/.env
 !**/.env.example
@@ -20,3 +21,5 @@ supabase/.temp/
 *.pem
 *.key
 .dev.vars
+.stryker-tmp/
+reports/

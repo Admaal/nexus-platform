@@ -1,0 +1,2 @@
+# Evidencia del RED: cada rama añade sus lineas y se fusionan sin conflicto.
+.cursor/red.log merge=union
