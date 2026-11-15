@@ -106,7 +106,8 @@ Guía completa: [`docs/DEPLOY.md`](docs/DEPLOY.md)
 | `npm run dev:fleet`                                       | Solo fleet (:5174)           |
 | `npm run build:store` / `build:fleet`                     | Builds de producción         |
 | `npm run test:db`                                         | Tests pgTAP (RLS, cola, DLQ) |
-| `node scripts/e2e-events.mjs`                             | E2E local del flujo (ver cabecera) |
+| `node scripts/e2e-events.mjs`                             | Integración del worker (ver cabecera) |
+| `npm run test:e2e`                                        | E2E Playwright compra → factura → tracking |
 
 ## Migraciones
 

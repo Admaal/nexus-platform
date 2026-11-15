@@ -48,14 +48,60 @@ jobs:
       - name: supabase test db
         run: supabase test db
 
+  e2e:
+    name: Integración y E2E (Supabase local + Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ORDER_WORKER_SECRET: local-worker-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Arrancar Supabase local
+        run: supabase start -x studio,imgproxy,mailpit,logflare,vector,edge-runtime,postgres-meta,supavisor
+      - name: Exportar claves locales
+        run: |
+          supabase status -o env | sed 's/^API_URL=/SUPABASE_URL=/' | tr -d '"' >> "$GITHUB_ENV"
+      - name: Servir Edge Functions
+        run: |
+          printf 'ORDER_WORKER_SECRET=local-worker-secret\nEMAIL_PROVIDER=log\nDEMO_TRUCK_ID=demo-truck-1\nFLEET_TRACKING_URL=http://localhost:5174\n' > "$RUNNER_TEMP/fn.env"
+          nohup supabase functions serve --env-file "$RUNNER_TEMP/fn.env" --no-verify-jwt > "$RUNNER_TEMP/serve.log" 2>&1 &
+          for i in $(seq 1 60); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$SUPABASE_URL/functions/v1/order-worker" || true)
+            [ "$code" = "401" ] && exit 0
+            sleep 2
+          done
+          cat "$RUNNER_TEMP/serve.log"
+          exit 1
+      - name: Integración del worker (cola, pasos, telemetría)
+        run: node scripts/e2e-events.mjs
+      - run: npx playwright install --with-deps chromium
+      - name: E2E compra → factura → tracking
+        run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7
+
   gate:
     name: Gate obligatorio
     if: ${{ always() }}
-    needs: [gates, db-tests]
+    needs: [gates, db-tests, e2e]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Comprobar resultados
         shell: pwsh
         run: |
-          if ("${{ needs.gates.result }}" -ne "success" -or "${{ needs.db-tests.result }}" -ne "success") { exit 1 }
+          if ("${{ needs.gates.result }}" -ne "success" -or "${{ needs.db-tests.result }}" -ne "success" -or "${{ needs.e2e.result }}" -ne "success") { exit 1 }
