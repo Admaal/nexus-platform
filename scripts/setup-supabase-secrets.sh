@@ -2,7 +2,7 @@
 # Configura secrets en Supabase tras clonar el repo (ejecutar manualmente).
 set -euo pipefail
 
-PROJECT_REF="${PROJECT_REF:-yiarfffsaciuodbplxus}"
+PROJECT_REF="${PROJECT_REF:?Define PROJECT_REF (ref del proyecto Supabase)}"
 
 if [ -z "${ORDER_WORKER_SECRET:-}" ] || [ -z "${SENDER_EMAIL:-}" ] || [ -z "${BREVO_API_KEY:-}" ]; then
   echo "Define: ORDER_WORKER_SECRET, SENDER_EMAIL, BREVO_API_KEY"
