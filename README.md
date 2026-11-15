@@ -10,6 +10,15 @@ Una tienda online y un panel de seguimiento de flota enlazados por el id del ped
 
 > Demo pública con datos de prueba. No uses datos personales reales.
 
+## Demo en vivo
+
+- **Tienda:** https://nexus-store-nu.vercel.app
+- **Panel de seguimiento:** https://nexus-platform-fleet.vercel.app (se abre desde «Rastrear Envío» en un pedido)
+
+Haz un pedido con datos ficticios y mira cómo avanza la línea temporal. La demo no envía correos (`EMAIL_PROVIDER=log`): la factura y el seguimiento funcionan igual.
+
+![Demo: de la compra al seguimiento del envío](docs/img/demo.gif)
+
 ![Línea temporal del pedido en vivo](docs/img/store-order-completed.png)
 
 *El pedido avanza por los eventos del backend y la interfaz lo refleja en tiempo real.*

@@ -27,6 +27,10 @@ SELECT vault.create_secret('https://<project-ref>.supabase.co/functions/v1/order
 
 Sin ellos el sistema sigue funcionando, pero la latencia pasa a ser la del barrido (hasta un minuto) y la base de datos solo emite un aviso.
 
+### Correo en la demo pública
+
+Si quieres que la demo no envíe correos reales, configura `EMAIL_PROVIDER=log` (`supabase secrets set EMAIL_PROVIDER=log`). El worker completa el pedido igual y solo deja constancia en el log. Con el valor por defecto (`brevo`) hacen falta `BREVO_API_KEY` y `SENDER_EMAIL` válidos; si Brevo rechaza la clave, el error se clasifica como permanente y el pedido pasa a `FAILED` con el motivo visible.
+
 ### Comprobaciones tras desplegar
 
 - `supabase test db` contra una copia local de las mismas migraciones.
