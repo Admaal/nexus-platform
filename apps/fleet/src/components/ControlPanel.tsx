@@ -1,7 +1,13 @@
 import { PlayIcon, RefreshIcon, StopIcon } from "./ui/Icon";
 
+interface ControlPanelProps {
+  isSimulating: boolean;
+  onToggle: () => void;
+  onReset: () => void;
+}
+
 /** Indicador de estado y botones de acción de la flota. */
-export function ControlPanel({ isSimulating, onToggle, onReset }) {
+export function ControlPanel({ isSimulating, onToggle, onReset }: ControlPanelProps) {
   return (
     <div className="control-panel">
       <div className="control-panel-header">

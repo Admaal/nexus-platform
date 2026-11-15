@@ -1,10 +1,19 @@
+import type { ReactNode } from "react";
+
+export interface IconProps {
+  className?: string;
+  fill?: string;
+  stroke?: string;
+  strokeWidth?: number;
+}
+
 function IconBase({
   children,
   className = "",
   fill = "none",
   stroke = "currentColor",
   strokeWidth = 1.8,
-}) {
+}: IconProps & { children: ReactNode }) {
   return (
     <svg
       className={`fleet-icon ${className}`.trim()}
@@ -22,7 +31,7 @@ function IconBase({
   );
 }
 
-export function TruckIcon(props) {
+export function TruckIcon(props: IconProps) {
   return (
     <IconBase {...props}>
       <path d="M3 6h11v10H3z" />
@@ -33,7 +42,7 @@ export function TruckIcon(props) {
   );
 }
 
-export function PackageIcon(props) {
+export function PackageIcon(props: IconProps) {
   return (
     <IconBase {...props}>
       <path d="m4 7 8-4 8 4-8 4-8-4Z" />
@@ -44,7 +53,7 @@ export function PackageIcon(props) {
   );
 }
 
-export function AlertIcon(props) {
+export function AlertIcon(props: IconProps) {
   return (
     <IconBase {...props}>
       <path d="m12 3 9 17H3L12 3Z" />
@@ -54,7 +63,7 @@ export function AlertIcon(props) {
   );
 }
 
-export function CheckIcon(props) {
+export function CheckIcon(props: IconProps) {
   return (
     <IconBase {...props}>
       <circle cx="12" cy="12" r="9" />
@@ -63,7 +72,7 @@ export function CheckIcon(props) {
   );
 }
 
-export function InfoIcon(props) {
+export function InfoIcon(props: IconProps) {
   return (
     <IconBase {...props}>
       <circle cx="12" cy="12" r="9" />
@@ -73,7 +82,7 @@ export function InfoIcon(props) {
   );
 }
 
-export function PlayIcon(props) {
+export function PlayIcon(props: IconProps) {
   return (
     <IconBase {...props}>
       <circle cx="12" cy="12" r="9" />
@@ -82,7 +91,7 @@ export function PlayIcon(props) {
   );
 }
 
-export function StopIcon(props) {
+export function StopIcon(props: IconProps) {
   return (
     <IconBase {...props}>
       <rect x="7" y="7" width="10" height="10" rx="1" fill="currentColor" stroke="none" />
@@ -90,7 +99,7 @@ export function StopIcon(props) {
   );
 }
 
-export function RefreshIcon(props) {
+export function RefreshIcon(props: IconProps) {
   return (
     <IconBase {...props}>
       <path d="M20 11a8 8 0 0 0-14.7-4L3 10" />
@@ -101,7 +110,7 @@ export function RefreshIcon(props) {
   );
 }
 
-export function SettingsIcon(props) {
+export function SettingsIcon(props: IconProps) {
   return (
     <IconBase {...props}>
       <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4" />
@@ -110,7 +119,7 @@ export function SettingsIcon(props) {
   );
 }
 
-export function RocketIcon(props) {
+export function RocketIcon(props: IconProps) {
   return (
     <IconBase {...props}>
       <path d="M14.5 4.5c2.5-2.5 5.5-2 5.5-2s.5 3-2 5.5L13 13l-2-2 3.5-6.5Z" />
@@ -122,7 +131,7 @@ export function RocketIcon(props) {
   );
 }
 
-export function FlagIcon(props) {
+export function FlagIcon(props: IconProps) {
   return (
     <IconBase {...props}>
       <path d="M5 21V4" />

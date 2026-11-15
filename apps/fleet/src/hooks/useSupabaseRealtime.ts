@@ -1,29 +1,36 @@
 import { useEffect, useState } from "react";
 import { getSupabase, STARTING_POINT } from "../lib/supabase";
 import { env } from "../lib/env";
+import type { AddLog, LatLon } from "../types";
 
-export function useSupabaseRealtime(addLog, trackingId) {
-  const [truckPosition, setTruckPosition] = useState(STARTING_POINT);
+type TelemetryRow = {
+  truck_id: string;
+  lat: number | null;
+  lon: number | null;
+  is_deviated: boolean;
+};
+
+export function useSupabaseRealtime(addLog: AddLog, trackingId: string | null) {
+  const [truckPosition, setTruckPosition] = useState<LatLon>(STARTING_POINT);
   const [isDeviated, setIsDeviated] = useState(false);
-  
+
   const activeTruckId = trackingId || env.TRUCK_ID;
 
   useEffect(() => {
     const supabase = getSupabase();
 
     const channel = supabase
-      .channel(`telemetry-${activeTruckId}`) 
-      .on(
+      .channel(`telemetry-${activeTruckId}`)
+      .on<TelemetryRow>(
         "postgres_changes",
-        { 
-          event: "INSERT", 
-          schema: "public", 
+        {
+          event: "INSERT",
+          schema: "public",
           table: "telemetry",
-          filter: `truck_id=eq.${activeTruckId}` 
+          filter: `truck_id=eq.${activeTruckId}`,
         },
         (payload) => {
           const { lat, lon, is_deviated: deviated, truck_id } = payload.new;
-
 
           if (truck_id !== activeTruckId) return;
 
@@ -42,7 +49,9 @@ export function useSupabaseRealtime(addLog, trackingId) {
       )
       .subscribe();
 
-    return () => supabase.removeChannel(channel);
+    return () => {
+      void supabase.removeChannel(channel);
+    };
   }, [addLog, activeTruckId]);
 
   const resetPosition = () => {

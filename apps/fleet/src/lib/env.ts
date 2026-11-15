@@ -13,13 +13,13 @@ const VAR_NAMES = {
   TELEMETRY_INGEST_URL: "VITE_TELEMETRY_INGEST_URL",
   TELEMETRY_INGEST_SECRET: "VITE_TELEMETRY_INGEST_SECRET",
   TRUCK_ID: "VITE_TRUCK_ID",
-};
+} as const;
 
 /** Valida que todas las variables de entorno requeridas existan. */
-export function validateEnv() {
-  const missing = Object.entries(VAR_NAMES)
-    .filter(([key]) => !env[key])
-    .map(([, varName]) => varName);
+export function validateEnv(): void {
+  const missing = (Object.keys(VAR_NAMES) as (keyof typeof VAR_NAMES)[])
+    .filter((key) => !env[key])
+    .map((key) => VAR_NAMES[key]);
 
   if (missing.length === 0) return;
 

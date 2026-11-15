@@ -3,9 +3,8 @@
   "compilerOptions": {
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
-    "allowJs": true,
-    "checkJs": false,
+    "resolveJsonModule": true,
     "types": ["vite/client"]
   },
-  "include": ["src", "vite-env.d.ts"]
+  "include": ["src", "vite.config.ts"]
 }

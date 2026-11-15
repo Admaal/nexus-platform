@@ -6,7 +6,14 @@ const OSM_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors';
 const CARTO_ATTRIBUTION = `${OSM_ATTRIBUTION} &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a>`;
 
-export function getMapTileConfig(apiKey = "") {
+export interface MapTileConfig {
+  url: string;
+  attribution: string;
+  maxZoom: number;
+  provider: "osm" | "carto";
+}
+
+export function getMapTileConfig(apiKey = ""): MapTileConfig {
   const normalizedKey = apiKey.trim();
 
   if (!normalizedKey) {

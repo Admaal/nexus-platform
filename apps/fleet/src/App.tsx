@@ -4,18 +4,20 @@ import { useSimulation } from "./hooks/useSimulation";
 import { Sidebar } from "./components/Sidebar";
 import { FleetMap } from "./components/FleetMap";
 import { PackageIcon } from "./components/ui/Icon";
+import type { LogEntry, LogType } from "./types";
+import { orderRef } from "./lib/orderRef";
 
 let logIdCounter = 0;
 
 function App() {
-  const [alertsLog, setAlertsLog] = useState([]);
+  const [alertsLog, setAlertsLog] = useState<LogEntry[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const autoStarted = useRef(false);
 
   const urlParams = new URLSearchParams(window.location.search);
-  const trackingId = urlParams.get("tracking_id");
+  const trackingId = urlParams.get("tracking_id") || null;
 
-  const addLog = useCallback((msg, type = "info") => {
+  const addLog = useCallback((msg: string, type: LogType = "info") => {
     const time = new Date().toLocaleTimeString();
     setAlertsLog((prev) => [{ id: ++logIdCounter, time, msg, type }, ...prev]);
   }, []);
@@ -29,7 +31,7 @@ function App() {
   useEffect(() => {
     if (trackingId && !autoStarted.current) {
       autoStarted.current = true;
-      addLog(`Rastreando pedido: ${trackingId.split("-")[0].toUpperCase()}`, "success");
+      addLog(`Rastreando pedido: ${orderRef(trackingId)}`, "success");
       
       setTimeout(() => {
         toggleSimulation();
@@ -53,7 +55,7 @@ function App() {
 
   const closeSidebar = () => setSidebarOpen(false);
   
-  const isCustomerMode = Boolean(trackingId);
+  const isCustomerMode = trackingId !== null;
 
   return (
     <div className="app-layout">
@@ -108,7 +110,7 @@ function App() {
             <PackageIcon className="icon--inline" /> Rastreo de Envío
           </h3>
           <p className="tracking-card__ref">
-            Pedido Ref: <strong style={{ color: "#0f172a" }}>{trackingId.split("-")[0].toUpperCase()}</strong>
+            Pedido Ref: <strong style={{ color: "#0f172a" }}>{orderRef(trackingId)}</strong>
           </p>
           <div className="tracking-card__status">
             <span

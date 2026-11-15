@@ -3,13 +3,14 @@ import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from "react-leafl
 import "leaflet/dist/leaflet.css";
 import { blueIcon, redIcon } from "../constants/mapIcons";
 import { env } from "../lib/env";
-import { getMapTileConfig } from "../lib/mapTiles";
+import { getMapTileConfig, type MapTileConfig } from "../lib/mapTiles";
+import type { LatLon } from "../types";
 import { MapResizer } from "./MapResizer";
 import { AlertIcon, CheckIcon } from "./ui/Icon";
 
 /** Mapa Leaflet con marcador de posición y banner de alerta. */
-export function FleetMap({ truckPosition, isDeviated }) {
-  const [tileConfig, setTileConfig] = useState(() => getMapTileConfig(env.CARTO_API_KEY));
+export function FleetMap({ truckPosition, isDeviated }: { truckPosition: LatLon; isDeviated: boolean }) {
+  const [tileConfig, setTileConfig] = useState<MapTileConfig>(() => getMapTileConfig(env.CARTO_API_KEY));
 
   const handleTileError = () => {
     if (tileConfig.provider === "carto") {

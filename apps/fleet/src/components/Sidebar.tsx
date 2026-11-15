@@ -2,8 +2,19 @@ import { ControlPanel } from "./ControlPanel";
 import { EventConsole } from "./EventConsole";
 import { TruckIcon } from "./ui/Icon";
 
+import type { LogEntry } from "../types";
+
+interface SidebarProps {
+  isSimulating: boolean;
+  alertsLog: LogEntry[];
+  onToggle: () => void;
+  onReset: () => void;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
 /** Barra lateral. En móvil actúa como drawer con la clase `.open`. */
-export function Sidebar({ isSimulating, alertsLog, onToggle, onReset, isOpen, onClose }) {
+export function Sidebar({ isSimulating, alertsLog, onToggle, onReset, isOpen, onClose }: SidebarProps) {
   return (
     <aside className={`sidebar ${isOpen ? "open" : ""}`}>
       <div className="sidebar-header">

@@ -1,25 +1,22 @@
-import { StrictMode, Component } from "react";
+import { StrictMode, Component, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { validateEnv } from "./lib/env";
-import App from "./App.jsx";
+import App from "./App";
 import { SettingsIcon } from "./components/ui/Icon";
 
 // H6: Validar env UNA sola vez antes de montar React.
 // Si falla, el Error Boundary captura el error y muestra pantalla útil.
 validateEnv();
 
-class ErrorBoundary extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { error: null };
-  }
+class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
+  override state: { error: Error | null } = { error: null };
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(error: Error) {
     return { error };
   }
 
-  render() {
+  override render() {
     if (this.state.error) {
       return (
         <div
@@ -116,7 +113,10 @@ class ErrorBoundary extends Component {
   }
 }
 
-createRoot(document.getElementById("root")).render(
+const rootElement = document.getElementById("root");
+if (!rootElement) throw new Error("No se encontró el elemento #root");
+
+createRoot(rootElement).render(
   <StrictMode>
     <ErrorBoundary>
       <App />

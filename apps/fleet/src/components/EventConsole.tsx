@@ -1,6 +1,7 @@
 import { AlertIcon, CheckIcon, InfoIcon } from "./ui/Icon";
+import type { LogEntry, LogType } from "../types";
 
-function getLogStyle(type) {
+function getLogStyle(type: LogType) {
   switch (type) {
     case "warning":
       return {
@@ -30,7 +31,7 @@ function getLogStyle(type) {
 }
 
 /** Consola de eventos en tiempo real. */
-export function EventConsole({ alertsLog }) {
+export function EventConsole({ alertsLog }: { alertsLog: LogEntry[] }) {
   return (
     <div className="event-console">
       <div className="event-console-header">

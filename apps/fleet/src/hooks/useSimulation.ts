@@ -1,13 +1,18 @@
 import { useState, useRef } from "react";
-import rutaData from "../ruta_toledo_peligros.json";
 import { env } from "../lib/env";
+import { getRoutePoints } from "../lib/route";
+import type { AddLog } from "../types";
 
 const TELEMETRY_INGEST_URL = env.TELEMETRY_INGEST_URL;
 const MAX_RETRIES = 3;
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function fetchWithRetry(url, options, retries = MAX_RETRIES) {
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit,
+  retries = MAX_RETRIES,
+): Promise<Response> {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const response = await fetch(url, options);
@@ -19,9 +24,10 @@ async function fetchWithRetry(url, options, retries = MAX_RETRIES) {
     }
     await sleep(1000 * Math.pow(2, attempt - 1));
   }
+  throw new Error("fetchWithRetry: sin intentos");
 }
 
-export function useSimulation(addLog, trackingId) {
+export function useSimulation(addLog: AddLog, trackingId: string | null) {
   const [isSimulating, setIsSimulating] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [resumeIndex, setResumeIndex] = useState(0);
@@ -43,7 +49,7 @@ export function useSimulation(addLog, trackingId) {
     setIsFinished(false);
     simulationRef.current = true;
 
-    const coordenadas = rutaData.features[0].geometry.coordinates;
+    const coordenadas = getRoutePoints();
     const startIndex = currentIndexRef.current;
 
     if (startIndex === 0) {
@@ -56,7 +62,9 @@ export function useSimulation(addLog, trackingId) {
       currentIndexRef.current = i;
       if (!simulationRef.current) break;
 
-      const [lon, lat] = coordenadas[i];
+      const point = coordenadas[i];
+      if (!point) break;
+      const [lat, lon] = point;
       const pingLabel = `Ping ${i + 1}/${coordenadas.length}`;
 
       try {
@@ -74,7 +82,7 @@ export function useSimulation(addLog, trackingId) {
         });
       } catch (error) {
         addLog(
-          `${pingLabel} — Error de red tras ${MAX_RETRIES} intentos: ${error.message}`,
+          `${pingLabel} — Error de red tras ${MAX_RETRIES} intentos: ${error instanceof Error ? error.message : String(error)}`,
           "warning",
         );
       }
