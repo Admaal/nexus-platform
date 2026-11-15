@@ -1,8 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
-
 /* ─── Reset & Base ─────────────────────────────────────────────── */
 :root {
-  font-family: "Inter", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: var(--nx-font-sans);
   line-height: 1.5;
   font-weight: 400;
   color-scheme: dark;
@@ -291,7 +289,7 @@ body {
 }
 
 .status-label.inactive {
-  color: #ef4444;
+  color: #f87171;
 }
 
 .control-buttons {
@@ -321,14 +319,14 @@ body {
 }
 
 .btn-start {
-  background-color: #3b82f6;
+  background-color: #2563eb;
   color: #ffffff;
-  border: 1px solid #3b82f6;
+  border: 1px solid #2563eb;
 }
 
 .btn-stop {
   background-color: transparent;
-  color: #ef4444;
+  color: #f87171;
   border: 1px solid #ef4444;
 }
 
@@ -358,7 +356,7 @@ body {
 }
 
 .btn-secondary.disabled {
-  color: #475569;
+  color: #94a3b8;
   border: 1px solid #334155;
   cursor: not-allowed;
 }
@@ -394,7 +392,7 @@ body {
 }
 
 .event-empty {
-  color: #475569;
+  color: #94a3b8;
   text-align: center;
   margin-top: 20px;
   font-size: 0.9rem;
@@ -567,4 +565,16 @@ body {
     font-size: 0.9rem;
     padding: 11px;
   }
+}
+
+/* ─── Seguimiento: estado del envío y enlace a la tienda ─────────── */
+.tracking-card__shipment { margin: 0 0 8px; font-size: 0.85rem; color: #334155; }
+.tracking-card__link {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--nx-info);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }

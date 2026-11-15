@@ -24,6 +24,7 @@ export interface Order {
   customer_name: string | null;
   shipping_address: string | null;
   invoice_path: string | null;
+  failure_reason: string | null;
   status: OrderStatus;
   created_at: string;
   items: OrderItem[];

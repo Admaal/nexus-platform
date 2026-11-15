@@ -6,6 +6,9 @@ import { FleetMap } from "./components/FleetMap";
 import { PackageIcon } from "./components/ui/Icon";
 import type { LogEntry, LogType } from "./types";
 import { orderRef } from "@nexus/domain";
+import { env } from "./lib/env";
+import { shipmentLabel } from "./lib/shipmentStatus";
+import { useShipmentStatus } from "./hooks/useShipmentStatus";
 
 let logIdCounter = 0;
 
@@ -16,6 +19,8 @@ function App() {
 
   const urlParams = new URLSearchParams(window.location.search);
   const trackingId = urlParams.get("tracking_id") || null;
+
+  const shipmentStatus = useShipmentStatus(trackingId);
 
   const addLog = useCallback((msg: string, type: LogType = "info") => {
     const time = new Date().toLocaleTimeString();
@@ -112,7 +117,10 @@ function App() {
           <p className="tracking-card__ref">
             Pedido Ref: <strong style={{ color: "#0f172a" }}>{orderRef(trackingId)}</strong>
           </p>
-          <div className="tracking-card__status">
+          <p className="tracking-card__shipment">
+            Envío: <strong>{shipmentLabel(shipmentStatus)}</strong>
+          </p>
+          <div className="tracking-card__status" role="status" aria-live="polite">
             <span
               className="tracking-card__dot"
               style={{
@@ -121,11 +129,14 @@ function App() {
             />
             <span
               className="tracking-card__label"
-              style={{ color: isFinished ? "#1d4ed8" : (isSimulating ? "#15803d" : "#ca8a04") }}
+              style={{ color: isFinished ? "#1d4ed8" : (isSimulating ? "#15803d" : "#b45309") }}
             >
               {isFinished ? "¡Pedido Entregado con éxito!" : (isSimulating ? "En tránsito hacia Peligros" : "Preparando ruta...")}
             </span>
           </div>
+          <a className="tracking-card__link" href={env.STORE_URL}>
+            ← Volver a la tienda
+          </a>
         </div>
       )}
 

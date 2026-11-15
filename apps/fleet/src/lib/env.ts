@@ -4,6 +4,7 @@ export const env = {
   TELEMETRY_INGEST_URL: import.meta.env.VITE_TELEMETRY_INGEST_URL,
   CARTO_API_KEY: import.meta.env.VITE_CARTO_API_KEY,
   TRUCK_ID: import.meta.env.VITE_TRUCK_ID,
+  STORE_URL: (import.meta.env.VITE_STORE_URL ?? "http://localhost:5173").replace(/\/$/, ""),
 };
 
 const VAR_NAMES = {

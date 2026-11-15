@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../contexts/AuthContext";
+import type { OrderStep } from "@nexus/domain";
 import type { CartItem, CustomerInfo, Order } from "../types";
 
 const INVOICE_URL_TTL_SECONDS = 60 * 10;
@@ -15,6 +16,7 @@ export type Orders = ReturnType<typeof useOrders>;
 
 export function useOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [steps, setSteps] = useState<Record<string, OrderStep[]>>({});
   const [loading, setLoading] = useState(false);
   const isMounted = useRef(true);
   const { user, ensureAuth } = useAuth();
@@ -32,11 +34,27 @@ export function useOrders() {
     if (error) console.error(error);
   }, [user]);
 
+  const fetchSteps = useCallback(async () => {
+    if (!user) return;
+    const { data, error } = await supabase.from("order_event_steps").select("order_id, step");
+    if (error) {
+      console.error(error);
+      return;
+    }
+    if (!isMounted.current) return;
+    const grouped: Record<string, OrderStep[]> = {};
+    for (const row of (data ?? []) as { order_id: string; step: OrderStep }[]) {
+      (grouped[row.order_id] ??= []).push(row.step);
+    }
+    setSteps(grouped);
+  }, [user]);
+
   useEffect(() => {
     isMounted.current = true;
 
     if (user) {
       void fetchOrders();
+      void fetchSteps();
 
       const channel = supabase
         .channel("public:orders")
@@ -44,6 +62,11 @@ export function useOrders() {
           "postgres_changes",
           { event: "*", schema: "public", table: "orders" },
           () => void fetchOrders()
+        )
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "order_event_steps" },
+          () => void fetchSteps()
         )
         .subscribe();
 
@@ -56,7 +79,7 @@ export function useOrders() {
     return () => {
       isMounted.current = false;
     };
-  }, [user, fetchOrders]);
+  }, [user, fetchOrders, fetchSteps]);
 
   /** El servidor calcula el total con el catálogo: solo se envían ids y cantidades. */
   const createOrder = useCallback(async (
@@ -128,5 +151,5 @@ export function useOrders() {
     window.open(data.signedUrl, "_blank", "noopener,noreferrer");
   }, []);
 
-  return { orders, loading, fetchOrders, createOrder, retryProcessOrder, openInvoice };
+  return { orders, steps, loading, fetchOrders, createOrder, retryProcessOrder, openInvoice };
 }

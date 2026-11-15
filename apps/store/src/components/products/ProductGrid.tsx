@@ -17,14 +17,29 @@ function SkeletonCard() {
 interface ProductGridProps {
   products: Product[];
   loading: boolean;
+  error?: string | null;
+  onRetry?: () => void;
   onAddToCart: (product: Product) => void;
 }
 
-export function ProductGrid({ products, loading, onAddToCart }: ProductGridProps) {
+export function ProductGrid({ products, loading, error = null, onRetry, onAddToCart }: ProductGridProps) {
   if (loading) {
     return (
       <div className="product-grid">
         {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="product-grid__error" role="alert">
+        <p>No pudimos cargar el catálogo. Revisa tu conexión e inténtalo de nuevo.</p>
+        {onRetry && (
+          <button type="button" className="btn btn--secondary btn--md" onClick={onRetry}>
+            Reintentar
+          </button>
+        )}
       </div>
     );
   }

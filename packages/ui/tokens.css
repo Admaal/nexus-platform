@@ -1,0 +1,45 @@
+/*
+ * Tokens de diseño compartidos (store y fleet).
+ * Los colores de estado cumplen contraste AA (>= 4.5:1) como texto sobre blanco.
+ */
+:root {
+  --nx-font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --nx-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Estados semánticos */
+  --nx-success: #15803d;
+  --nx-success-soft: #dcfce7;
+  --nx-warning: #b45309;
+  --nx-warning-soft: #fef3c7;
+  --nx-error: #b91c1c;
+  --nx-error-soft: #fee2e2;
+  --nx-info: #1d4ed8;
+  --nx-info-soft: #dbeafe;
+  --nx-processing: #6d28d9;
+  --nx-processing-soft: #ede9fe;
+
+  /* Texto neutro sobre fondo claro (AA) */
+  --nx-text: #1a1a1a;
+  --nx-text-secondary: #595959;
+  --nx-text-muted: #6b6b6b;
+
+  /* Foco visible */
+  --nx-focus: #2563eb;
+
+  /* Escala de espaciado y radios */
+  --nx-space-1: 4px;
+  --nx-space-2: 8px;
+  --nx-space-3: 12px;
+  --nx-space-4: 16px;
+  --nx-space-6: 24px;
+  --nx-space-8: 32px;
+  --nx-radius-sm: 4px;
+  --nx-radius-md: 8px;
+  --nx-radius-lg: 16px;
+  --nx-radius-full: 9999px;
+
+  /* Movimiento */
+  --nx-duration-fast: 150ms;
+  --nx-duration: 250ms;
+  --nx-ease: cubic-bezier(0.2, 0, 0, 1);
+}
