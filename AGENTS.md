@@ -34,7 +34,7 @@ Cualquier trabajo nuevo empieza con un plan y un test en rojo.
 4. **Hooks** (`.cursor/hooks.json`, PowerShell): `postToolUse` → `gates.ps1 fast`; `stop` → `gates.ps1 full`; `beforeShellExecution` → `guard-shell.ps1`.
    - Medición `full` en caliente: ~20 s (2026-11-15, domain + 2 apps, sin mutación pesada). El presupuesto del bucle rápido se fija tras medir `fast` varias veces; pendiente.
 5. **CI** (`.github/workflows/ci.yml`): llama a `scripts/gates.ps1 ci`, con job agregador `Gate obligatorio`.
-6. **Rama `main`:** los cambios llegan por PR con CI en verde (`gh pr checks`). Protección de rama pendiente de decidir según visibilidad del repo.
+6. **Rama `main`:** protegida por el ruleset `main protegida` de GitHub (repo público): exige el check `Gate obligatorio` (el job agregador de `ci.yml`; si lo renombras, actualiza también el ruleset) y prohíbe force push y borrado. Sin excepciones para administradores: todo llega por PR con CI en verde (`gh pr checks`).
 
 ## Cómo trabajo con IA
 
