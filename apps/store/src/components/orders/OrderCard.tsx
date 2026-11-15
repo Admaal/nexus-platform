@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { Badge } from "../ui/Badge";
 import { FileIcon, TruckIcon } from "../ui/Icon";
-import { orderRef } from "@nexus/domain";
+import { orderRef, type OrderStep } from "@nexus/domain";
+import { OrderTimeline } from "./OrderTimeline";
 import type { Order } from "../../types";
 
 interface OrderCardProps {
   order: Order;
   onRetryProcess?: ((orderId: string) => unknown) | undefined;
   onOpenInvoice?: ((order: Order) => unknown) | undefined;
+  steps?: readonly OrderStep[];
 }
 
-export function OrderCard({ order, onRetryProcess, onOpenInvoice }: OrderCardProps) {
+export function OrderCard({ order, onRetryProcess, onOpenInvoice, steps = [] }: OrderCardProps) {
   const isCompleted = order.status === "COMPLETED";
   const ref = orderRef(order.id);
   const [retrying, setRetrying] = useState(false);
@@ -43,6 +45,11 @@ export function OrderCard({ order, onRetryProcess, onOpenInvoice }: OrderCardPro
         </p>
       </div>
 
+      <details className="order-card__flow" open={!isCompleted}>
+        <summary className="order-card__flow-summary">Cómo funciona</summary>
+        <OrderTimeline order={order} steps={steps} />
+      </details>
+
       <div className="order-card__actions-wrapper">
         <div className="order-card__action">
           {isCompleted && order.invoice_path ? (
@@ -50,7 +57,7 @@ export function OrderCard({ order, onRetryProcess, onOpenInvoice }: OrderCardPro
               type="button"
               className="order-card__invoice-link"
               onClick={() => void onOpenInvoice?.(order)}
-              style={{ background: "none", border: "none", padding: 0, cursor: "pointer", font: "inherit" }}
+              style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "inherit" }}
             >
               <FileIcon className="icon--inline" /> Descargar Factura PDF
             </button>

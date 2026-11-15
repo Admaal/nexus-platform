@@ -24,6 +24,7 @@ function makeCart(items: CartItem[]): Cart {
 function makeOrders(createOrder: Orders["createOrder"]): Orders {
   return {
     orders: [],
+    steps: {},
     loading: false,
     fetchOrders: vi.fn(() => Promise.resolve()),
     createOrder,

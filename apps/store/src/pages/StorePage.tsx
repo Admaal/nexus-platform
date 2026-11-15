@@ -19,7 +19,7 @@ interface LocationState {
 }
 
 export function StorePage({ cart, orders }: { cart: Cart; orders: Orders }) {
-  const { products, loading } = useProducts();
+  const { products, loading, error, reload } = useProducts();
   const location = useLocation();
   const state = location.state as LocationState | null;
   const [cartOpen, setCartOpen] = useState(false);
@@ -45,7 +45,7 @@ export function StorePage({ cart, orders }: { cart: Cart; orders: Orders }) {
             <p className="section__eyebrow">Colección</p>
             <h2 className="section__title">Productos destacados</h2>
           </div>
-          <ProductGrid products={products} loading={loading} onAddToCart={cart.addItem} />
+          <ProductGrid products={products} loading={loading} error={error} onRetry={reload} onAddToCart={cart.addItem} />
         </div>
       </section>
 
@@ -74,6 +74,7 @@ export function StorePage({ cart, orders }: { cart: Cart; orders: Orders }) {
         orders={orders.orders}
         onRetryProcess={orders.retryProcessOrder}
         onOpenInvoice={orders.openInvoice}
+        stepsByOrder={orders.steps}
         checkoutWarning={state?.checkoutWarning}
       />
     </div>

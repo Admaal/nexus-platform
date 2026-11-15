@@ -1,0 +1,10 @@
+{
+  "name": "@nexus/ui",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Tokens de diseño y estilos base compartidos por store y fleet",
+  "exports": {
+    "./tokens.css": "./tokens.css",
+    "./base.css": "./base.css"
+  }
+}

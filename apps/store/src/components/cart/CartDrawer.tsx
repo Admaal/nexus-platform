@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useEscapeToClose } from "../../hooks/useDrawer";
 import { CartItem } from "./CartItem";
 import { Button } from "../ui/Button";
 import { ArrowRightIcon, CartIcon } from "../ui/Icon";
@@ -15,6 +16,7 @@ interface CartDrawerProps {
 
 export function CartDrawer({ isOpen, onClose, items, total, onRemove, onUpdateQuantity }: CartDrawerProps) {
   const navigate = useNavigate();
+  useEscapeToClose(isOpen, onClose);
 
   const handleCheckout = () => {
     onClose();
@@ -24,7 +26,13 @@ export function CartDrawer({ isOpen, onClose, items, total, onRemove, onUpdateQu
   return (
     <>
       {isOpen && <div className="overlay" onClick={onClose} />}
-      <aside className={`drawer drawer--right ${isOpen ? "drawer--open" : ""}`}>
+      <aside
+        className={`drawer drawer--right ${isOpen ? "drawer--open" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Tu carrito"
+        inert={!isOpen}
+      >
         <div className="drawer__header">
           <h2 className="drawer__title">Tu Carrito</h2>
           <button className="drawer__close" onClick={onClose} aria-label="Cerrar">×</button>

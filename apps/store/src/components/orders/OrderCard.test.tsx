@@ -10,6 +10,7 @@ const baseOrder: Order = {
   customer_name: "Ada",
   shipping_address: "Calle Mayor 1",
   invoice_path: null,
+  failure_reason: null,
   status: "PENDING",
   created_at: "2026-01-01T00:00:00Z",
   total: 284.5,

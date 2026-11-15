@@ -25,7 +25,7 @@ export function Navbar({ itemCount, onCartOpen, onOrdersOpen }: NavbarProps) {
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
           </button>
-          <button type="button" className="navbar__icon-btn navbar__cart-btn" onClick={onCartOpen} aria-label="Carrito">
+          <button type="button" className="navbar__icon-btn navbar__cart-btn" onClick={onCartOpen} aria-label={itemCount > 0 ? `Carrito, ${itemCount} artículos` : "Carrito"}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
               <line x1="3" y1="6" x2="21" y2="6" />

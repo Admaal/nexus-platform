@@ -1,5 +1,7 @@
 import { StrictMode, Component, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
+import '@nexus/ui/tokens.css'
+import '@nexus/ui/base.css'
 import "./index.css";
 import { validateEnv } from "./lib/env";
 import App from "./App";

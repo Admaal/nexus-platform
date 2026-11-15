@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 
 const SUPABASE_URL = process.env['SUPABASE_URL'] ?? 'http://127.0.0.1:54321'
@@ -39,11 +40,29 @@ test('compra → factura firmada → seguimiento en el panel de flota', async ({
   const orderCard = page.locator('.order-card').first()
   await expect(orderCard).toContainText('Ref:')
 
+  // Línea temporal: recién creado, la factura está en curso y aún no hay envío.
+  const timeline = orderCard.getByRole('list', { name: 'Progreso del pedido' })
+  await expect(timeline).toContainText('Pedido recibido — completado')
+  await expect(timeline).toContainText('Factura generada — en curso')
+  await expect(timeline).toContainText('Envío en marcha — pendiente')
+
   await kickWorker()
 
   // ---- Factura: descarga con URL firmada ----
   const invoiceButton = orderCard.getByRole('button', { name: /Descargar Factura PDF/ })
   await expect(invoiceButton).toBeVisible({ timeout: 30_000 })
+
+  // La línea temporal se completa en vivo (Realtime sobre order_event_steps).
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  if ((await orderCard.locator('details').getAttribute('open')) === null) {
+    await orderCard.getByText('Cómo funciona').click()
+  }
+  await expect(orderCard.locator('.timeline__item--done')).toHaveCount(4)
+  await expect(timeline).toContainText('Envío en marcha — completado')
+
+  // El panel de pedidos abierto, con línea temporal, cumple WCAG 2.1 AA.
+  const axe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze()
+  expect(axe.violations.map((v) => v.id + ': ' + v.nodes.map((n) => n.target.join(' ') + ' ' + (n.any[0]?.message ?? '')).join(' | '))).toEqual([])
 
   await invoiceButton.click()
   await expect.poll(() => page.evaluate(() => (window as unknown as { __opened?: string }).__opened ?? '')).toContain(

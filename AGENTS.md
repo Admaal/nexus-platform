@@ -6,9 +6,9 @@ Este archivo es la fuente de verdad de la fase y de la valla. El historial vive 
 
 ## Fase actual
 
-**Fase 3 — tests reales.** Dominio con mutation (carrito, eventos, pedido), tests de comportamiento de la tienda (Testing Library), pgTAP, integración del worker y E2E Playwright (compra → factura → tracking) en CI.
+**Fase 4 — diseño y producto.** Línea temporal del pedido en vivo (Realtime), tokens compartidos en `packages/ui`, estados de error, drawers accesibles, contraste AA y `prefers-reduced-motion`, con auditoría axe en E2E.
 
-No construyas la fase siguiente (F4: diseño y producto) hasta cerrar esta.
+No construyas la fase siguiente (F5: README para personas, diagramas y ADRs) hasta cerrar esta.
 
 ## Stack
 
@@ -16,6 +16,7 @@ No construyas la fase siguiente (F4: diseño y producto) hasta cerrar esta.
 - Frontend: React 19 + Vite (`apps/store`, `apps/fleet`). Backend: Supabase (Postgres, Edge Functions en Deno, Realtime).
 - Tests: Vitest + Testing Library (`npm test`), pgTAP (`npm run test:db`), E2E Playwright (`npm run test:e2e`, requiere Supabase local y `functions serve`). Mutation: Stryker.
 - Dominio: `packages/domain/src/` (puro, sin framework ni E/S).
+- Diseño: tokens y base de accesibilidad en `packages/ui` (`tokens.css`, `base.css`); los colores de estado cumplen AA.
 - Lint de pureza: `no-restricted-imports` y `no-restricted-globals` en `packages/domain/eslint.config.js`.
 
 ## Principios no negociables
@@ -23,6 +24,7 @@ No construyas la fase siguiente (F4: diseño y producto) hasta cerrar esta.
 - El dominio no importa React, Supabase, pdf-lib, Node ni E/S. Comprobación: `npm run lint -w @nexus/domain`.
 - El precio de un pedido lo decide el servidor con el catálogo, nunca el cliente. Comprobación: tests de `calculateOrderTotal` y mutation del dominio.
 - Sin `any` implícito ni índices sin comprobar. Comprobación: `npm run typecheck` (`strict`, `noUncheckedIndexedAccess`).
+- La UI cumple WCAG 2.1 AA. Comprobación: `e2e/a11y.spec.ts` (axe) y la auditoría dentro de `e2e/purchase.spec.ts`.
 
 ## Valla
 
