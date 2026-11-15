@@ -5,7 +5,7 @@ param(
   [Parameter(Mandatory = $true)][string]$BrevoApiKey,
   [string]$FleetTrackingUrl = "",
   [string]$DemoTruckId = "",
-  [string]$ProjectRef = "yiarfffsaciuodbplxus"
+  [Parameter(Mandatory = $true)][string]$ProjectRef
 )
 
 $secrets = @(

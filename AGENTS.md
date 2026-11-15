@@ -2,13 +2,13 @@
 
 Tienda e-commerce y panel de flota en tiempo real enlazados por el ID del pedido, sobre Supabase. Proyecto de portfolio que evoluciona a un flujo **event-driven** (cola, idempotencia, reintentos, DLQ).
 
-Este archivo es la fuente de verdad de la fase y de la valla. El historial vive en `docs/fases.md`. El plan de trabajo está en `docs/roadmap.md`.
+Este archivo es la fuente de verdad de la fase y de la valla. El historial vive en `docs/fases.md` y las decisiones en `docs/adr`.
 
 ## Fase actual
 
-**Fase 4 — diseño y producto.** Línea temporal del pedido en vivo (Realtime), tokens compartidos en `packages/ui`, estados de error, drawers accesibles, contraste AA y `prefers-reduced-motion`, con auditoría axe en E2E.
+**Fase 5 — documentación.** README para personas con diagramas, ADRs en `docs/adr` y guía de despliegue. Plan de F0–F5 completado.
 
-No construyas la fase siguiente (F5: README para personas, diagramas y ADRs) hasta cerrar esta.
+Cualquier trabajo nuevo empieza con un plan y un test en rojo.
 
 ## Stack
 
